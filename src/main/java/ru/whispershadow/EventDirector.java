@@ -8,8 +8,7 @@ import java.util.Random;
 
 public final class EventDirector {
 
-    private static final Random RANDOM =
-            new Random();
+    private static final Random RANDOM = new Random();
 
     private static final Deque<ScheduledEvent> queue =
             new ArrayDeque<>();
@@ -18,9 +17,7 @@ public final class EventDirector {
 
     private EventDirector() {}
 
-    public static void tick(
-            MinecraftClient client
-    ) {
+    public static void tick(MinecraftClient client) {
 
         if (client.player == null ||
                 client.world == null) {
@@ -171,6 +168,16 @@ public final class EventDirector {
                     )
             );
 
+        } else if (roll < 96 &&
+                level >= 2) {
+
+            queue.add(
+                    new ScheduledEvent(
+                            EventType.SIGN,
+                            delay(40, 260)
+                    )
+            );
+
         } else if (level >= 3) {
 
             queue.add(
@@ -230,6 +237,21 @@ public final class EventDirector {
                     new ScheduledEvent(
                             EventType.FIND_US,
                             delay(80, 500)
+                    )
+            );
+        }
+
+        /*
+         * RARE SIGN
+         */
+
+        if (level >= 2 &&
+                RANDOM.nextInt(160) == 0) {
+
+            queue.add(
+                    new ScheduledEvent(
+                            EventType.SIGN,
+                            delay(80, 360)
                     )
             );
         }
@@ -343,6 +365,11 @@ public final class EventDirector {
                             client
                     );
 
+            case SIGN ->
+                    SignIllusionEvent.start(
+                            client
+                    );
+
             case SILENCE -> {
                 // Intentionally empty.
             }
@@ -386,6 +413,8 @@ public final class EventDirector {
         DONT_MOVE,
 
         FIND_US,
+
+        SIGN,
 
         SILENCE
     }
