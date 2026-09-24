@@ -164,12 +164,6 @@ public final class EventDirector {
         } else if (roll < 93 &&
                 level >= 2) {
 
-            /*
-             * RUN event.
-             *
-             * It only becomes available from
-             * insanity level 2.
-             */
             queue.add(
                     new ScheduledEvent(
                             EventType.RUN,
@@ -196,7 +190,10 @@ public final class EventDirector {
             );
         }
 
-        // Rare VHS event.
+        /*
+         * RARE VHS
+         */
+
         if (RANDOM.nextInt(85) == 0) {
 
             queue.add(
@@ -208,13 +205,9 @@ public final class EventDirector {
         }
 
         /*
-         * Very rare DON'T MOVE event.
-         *
-         * Available from insanity level 2.
-         * This is intentionally independent from
-         * the main event roll so existing event
-         * probabilities stay almost unchanged.
+         * VERY RARE DON'T MOVE
          */
+
         if (level >= 2 &&
                 RANDOM.nextInt(140) == 0) {
 
@@ -226,7 +219,25 @@ public final class EventDirector {
             );
         }
 
-        // Rare chained event.
+        /*
+         * EXTREMELY RARE FIND US
+         */
+
+        if (level >= 3 &&
+                RANDOM.nextInt(220) == 0) {
+
+            queue.add(
+                    new ScheduledEvent(
+                            EventType.FIND_US,
+                            delay(80, 500)
+                    )
+            );
+        }
+
+        /*
+         * RARE CHAIN
+         */
+
         if (RANDOM.nextInt(19) == 0) {
 
             queue.add(
@@ -327,6 +338,11 @@ public final class EventDirector {
                             client
                     );
 
+            case FIND_US ->
+                    FindUsEvent.fire(
+                            client
+                    );
+
             case SILENCE -> {
                 // Intentionally empty.
             }
@@ -368,6 +384,8 @@ public final class EventDirector {
         RUN,
 
         DONT_MOVE,
+
+        FIND_US,
 
         SILENCE
     }
