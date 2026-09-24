@@ -4,6 +4,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -12,8 +14,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.sound.SoundInstance;
 
 import java.util.Locale;
 import java.util.Random;
@@ -212,45 +212,49 @@ public final class HorrorManager {
     private static final int RUN_DURATION_TICKS = 20 * 20;
     private static final int CHASE_SOUND_TICKS = 20 * 20;
     private static int chaseSoundTicks = 0;
-//Player skin
+
+    // Конкретный экземпляр музыки погони.
+    private static SoundInstance chaseSoundInstance = null;
+
+    // Player skin
     private static com.mojang.authlib.GameProfile getRandomPlayerProfile(
-        MinecraftClient client
-) {
+            MinecraftClient client
+    ) {
 
-    List<PlayerListEntry> players =
-            new ArrayList<>();
+        List<PlayerListEntry> players =
+                new ArrayList<>();
 
-    for (PlayerListEntry entry :
-            client.player.networkHandler
-                    .getPlayerList()) {
+        for (PlayerListEntry entry :
+                client.player.networkHandler
+                        .getPlayerList()) {
 
-        if (entry.getProfile() != null &&
-                !entry.getProfile()
-                        .id()
-                        .equals(
-                                client.player
-                                        .getGameProfile()
-                                        .id()
-                        )) {
+            if (entry.getProfile() != null &&
+                    !entry.getProfile()
+                            .id()
+                            .equals(
+                                    client.player
+                                            .getGameProfile()
+                                            .id()
+                            )) {
 
-            players.add(entry);
+                players.add(entry);
+            }
         }
+
+        if (!players.isEmpty()) {
+
+            PlayerListEntry selected =
+                    players.get(
+                            RANDOM.nextInt(
+                                    players.size()
+                            )
+                    );
+
+            return selected.getProfile();
+        }
+
+        return client.player.getGameProfile();
     }
-
-    if (!players.isEmpty()) {
-
-        PlayerListEntry selected =
-                players.get(
-                        RANDOM.nextInt(
-                                players.size()
-                        )
-                );
-
-        return selected.getProfile();
-    }
-
-    return client.player.getGameProfile();
-}
 
     // DON'T MOVE
     private static boolean dontMoveActive = false;
@@ -845,7 +849,6 @@ public final class HorrorManager {
                         false
                 );
 
-        // Только один ID для chase-сущности.
         entity.setId(
                 -800000 -
                         RANDOM.nextInt(100000)
@@ -870,6 +873,7 @@ public final class HorrorManager {
                 RUN_DURATION_TICKS;
     }
 
+    // CHASE MUSIC
     private static void playChaseSound(
             MinecraftClient client
     ) {
@@ -877,19 +881,44 @@ public final class HorrorManager {
         if (client.player == null)
             return;
 
+        // Останавливаем старый экземпляр перед запуском нового.
+        stopChaseSound(client);
+
+        chaseSoundInstance =
+                PositionedSoundInstance.master(
+                        ModSounds.CIRCUIT_CHASE,
+                        1.0f,
+                        1.0f
+                );
+
+        client.getSoundManager().play(
+                chaseSoundInstance
+        );
+
+        chaseSoundTicks =
+                CHASE_SOUND_TICKS;
+    }
+
+    private static void stopChaseSound(
+            MinecraftClient client
+    ) {
+
+        if (chaseSoundInstance != null) {
+
+            client.getSoundManager().stop(
+                    chaseSoundInstance
+            );
+
+            chaseSoundInstance = null;
+        }
+
+        // Дополнительная страховка от старых экземпляров.
         client.getSoundManager().stopSounds(
                 ModSounds.CIRCUIT_CHASE_ID,
                 null
         );
 
-        client.player.playSound(
-                ModSounds.CIRCUIT_CHASE,
-                0.30f,
-                1.0f
-        );
-
-        chaseSoundTicks =
-                CHASE_SOUND_TICKS;
+        chaseSoundTicks = 0;
     }
 
     private static void stopChase(
@@ -898,12 +927,8 @@ public final class HorrorManager {
 
         runActive = false;
         runTicks = 0;
-        chaseSoundTicks = 0;
 
-        client.getSoundManager().stopSounds(
-                ModSounds.CIRCUIT_CHASE_ID,
-                null
-        );
+        stopChaseSound(client);
     }
 
     // DON'T MOVE EVENT
@@ -1218,8 +1243,6 @@ public final class HorrorManager {
                 0.0f
         );
 
-        // Нужен уникальный client-side ID,
-        // чтобы сущность корректно существовала в ClientWorld.
         entity.setId(
                 -700000 -
                         RANDOM.nextInt(100000)
