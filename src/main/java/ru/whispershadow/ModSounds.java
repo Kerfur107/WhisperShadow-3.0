@@ -6,6 +6,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 
 public final class ModSounds {
+
     public static final Identifier WHISPER_ID =
             Identifier.of(WhisperShadowClient.MOD_ID, "whisper");
 
@@ -24,7 +25,6 @@ public final class ModSounds {
     public static final Identifier CIRCUIT_CHASE_ID =
             Identifier.of(WhisperShadowClient.MOD_ID, "circuit_chase");
 
-
     public static final SoundEvent WHISPER =
             SoundEvent.of(WHISPER_ID);
 
@@ -42,7 +42,6 @@ public final class ModSounds {
 
     public static final SoundEvent CIRCUIT_CHASE =
             SoundEvent.of(CIRCUIT_CHASE_ID);
-
 
     private ModSounds() {}
 
