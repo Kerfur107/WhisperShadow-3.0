@@ -376,10 +376,7 @@ public final class SignIllusionEvent {
         /*
          * Размер текста.
          */
-        textEntity.setTransformationInterpolationDuration(3);
-
-        textEntity.setStartInterpolation(0);
-
+        
         textEntityId =
                 250000 +
                         RANDOM.nextInt(50000);
