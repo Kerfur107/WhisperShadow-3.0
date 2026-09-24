@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "whispershadow",
+  "version": "${version}",
+  "name": "WhisperShadow",
+  "description": "Client-only psychological horror effects for Minecraft 1.21.11.",
+  "authors": ["You"],
+  "license": "All-Rights-Reserved",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "ru.whispershadow.WhisperShadowClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

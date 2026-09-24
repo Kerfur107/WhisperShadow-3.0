@@ -1,0 +1,30 @@
+{
+  "whisper": {
+    "sounds": [
+      { "name": "whispershadow:whisper", "stream": false }
+    ]
+  },
+  "static": {
+    "sounds": [
+      { "name": "whispershadow:static", "stream": false }
+    ]
+  },
+  "glitch": {
+    "sounds": [
+      { "name": "whispershadow:glitch", "stream": false }
+    ]
+  },
+  "vhs": {
+    "sounds": [
+      { "name": "whispershadow:vhs", "stream": false }
+    ]
+  }
+,
+  "footsteps": {
+    "subtitle": "subtitles.whispershadow.footsteps",
+    "sounds": [
+      { "name": "minecraft:block.grass.step", "stream": false, "volume": 0.85, "pitch": 0.65 },
+      { "name": "minecraft:block.stone.step", "stream": false, "volume": 0.55, "pitch": 0.75 }
+    ]
+  }
+}
