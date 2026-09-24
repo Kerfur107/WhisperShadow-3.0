@@ -89,6 +89,10 @@ public final class HorrorManager {
             "d̶o̶ ̶n̶o̶t̶ ̶l̶o̶o̶k̶"
     };
 
+    // =========================================================
+    // GENERAL HORROR STATE
+    // =========================================================
+
     private static int glitchTicks = 0;
     private static int glitchStyle = 0;
     private static int vhsTicks = 0;
@@ -107,46 +111,197 @@ public final class HorrorManager {
     private static int tabIllusionTicks = 0;
     private static int tabMessageCooldown = 0;
 
+    // =========================================================
+    // "SHOW YOURSELF" EVENT
+    // =========================================================
+
+    private static int showYourselfCooldown = 0;
+    private static int showYourselfDelay = 0;
+    private static boolean showYourselfPending = false;
+
+    private static final String[] SHOW_YOURSELF_REFUSALS = {
+            "No.",
+            "You are nothing to me.",
+            "Go away.",
+            "I don't want to see you.",
+            "You cannot summon me.",
+            "I am not here.",
+            "Stop calling me.",
+            "You are not ready.",
+            "Why should I show myself?",
+            "Not yet.",
+            "You don't deserve to see me.",
+            "Leave me alone.",
+            "You cannot see me.",
+            "Wrong question.",
+            "I refuse.",
+            "You really want to see me?",
+            "No. You are nothing.",
+            "I was never here.",
+            "You should not ask that.",
+            "Keep looking."
+    };
+
     private HorrorManager() {}
 
     public static void init() {}
 
+    // =========================================================
+    // PLAYER CHAT
+    // =========================================================
+
     public static void handlePlayerChat(String message) {
         MinecraftClient client = MinecraftClient.getInstance();
+
         if (client.player == null || message == null || message.isBlank()) return;
 
-        // Most messages get no answer. The entity should feel unpredictable.
+        String cleanMessage = message.trim().toLowerCase(Locale.ROOT);
+
+        // =====================================================
+        // SHOW YOURSELF
+        // 15% = Shadow appears
+        // 85% = Shadow refuses
+        // =====================================================
+
+        if (cleanMessage.equals("show yourself")) {
+
+            // Prevent chat spam.
+            if (showYourselfCooldown > 0) {
+                return;
+            }
+
+            // 30-second cooldown.
+            showYourselfCooldown = 20 * 30;
+
+            // 15% chance.
+            boolean shadowAppears = RANDOM.nextInt(100) < 15;
+
+            if (shadowAppears) {
+
+                // Small delay before Shadow appears.
+                showYourselfPending = true;
+                showYourselfDelay = 40; // 2 seconds
+
+                client.player.sendMessage(
+                        Text.literal("...")
+                                .formatted(Formatting.DARK_GRAY),
+                        false
+                );
+
+                InsanityManager.add(1.0f);
+
+            } else {
+
+                // 85% chance: Shadow refuses.
+                String refusal =
+                        SHOW_YOURSELF_REFUSALS[
+                                RANDOM.nextInt(SHOW_YOURSELF_REFUSALS.length)
+                        ];
+
+                pendingReply = refusal;
+
+                // 1.25 - 3.5 seconds.
+                replyDelay = 25 + RANDOM.nextInt(45);
+
+                InsanityManager.add(
+                        0.3f + RANDOM.nextFloat() * 1.2f
+                );
+            }
+
+            // Don't let the normal chat system answer
+            // "Show yourself" as well.
+            return;
+        }
+
+        // =====================================================
+        // NORMAL CHAT SYSTEM
+        // =====================================================
+
         int level = InsanityManager.getLevelNumber();
         int chance = level >= 4 ? 48 : level >= 2 ? 36 : 24;
+
         if (RANDOM.nextInt(100) >= chance) return;
         if (replyDelay > 0 || pendingReply != null) return;
 
         pendingReply = chooseReply(message);
         replyDelay = 25 + RANDOM.nextInt(150);
-        InsanityManager.add(0.7f + RANDOM.nextFloat() * 2.0f);
+
+        InsanityManager.add(
+                0.7f + RANDOM.nextFloat() * 2.0f
+        );
     }
+
+    // =========================================================
+    // NORMAL REPLIES
+    // =========================================================
 
     private static String chooseReply(String input) {
         String clean = input.trim();
         String lower = clean.toLowerCase(Locale.ROOT);
-        String normalized = lower.replaceAll("[^a-z0-9? ]", "").trim();
+        String normalized =
+                lower.replaceAll("[^a-z0-9? ]", "").trim();
 
-        if (lower.contains("where are you") || lower.contains("where r u")) return "behind you";
-        if (lower.contains("who are you") || lower.contains("what are you")) return "you already know";
-        if (lower.contains("are you real") || lower.contains("are you there")) return "does it matter?";
-        if (lower.contains("hello") || lower.equals("hi") || lower.equals("hey")) return "err.type=" + clean;
-        if (lower.contains("help")) return "i can help";
-        if (lower.contains("go away") || lower.contains("leave me") || lower.contains("stop")) return "no";
-        if (lower.contains("i see you")) return "look again";
-        if (lower.contains("why me")) return "you noticed me";
-        if (lower.contains("what are you doing")) return "watching";
-        if (lower.contains("can you hear")) return "always";
-        if (lower.contains("goodbye") || lower.contains("bye")) return "not yet";
-        if (lower.contains("behind you")) return "not anymore";
-        if (lower.contains("fuck") || lower.contains("kill")) return "language changes nothing";
-        if (normalized.endsWith("?")) return GENERIC_REPLIES[RANDOM.nextInt(GENERIC_REPLIES.length)];
-        return GENERIC_REPLIES[RANDOM.nextInt(GENERIC_REPLIES.length)];
+        if (lower.contains("where are you") ||
+                lower.contains("where r u"))
+            return "behind you";
+
+        if (lower.contains("who are you") ||
+                lower.contains("what are you"))
+            return "you already know";
+
+        if (lower.contains("are you real") ||
+                lower.contains("are you there"))
+            return "does it matter?";
+
+        if (lower.contains("hello") ||
+                lower.equals("hi") ||
+                lower.equals("hey"))
+            return "err.type=" + clean;
+
+        if (lower.contains("help"))
+            return "i can help";
+
+        if (lower.contains("go away") ||
+                lower.contains("leave me") ||
+                lower.contains("stop"))
+            return "no";
+
+        if (lower.contains("i see you"))
+            return "look again";
+
+        if (lower.contains("why me"))
+            return "you noticed me";
+
+        if (lower.contains("what are you doing"))
+            return "watching";
+
+        if (lower.contains("can you hear"))
+            return "always";
+
+        if (lower.contains("goodbye") ||
+                lower.contains("bye"))
+            return "not yet";
+
+        if (lower.contains("behind you"))
+            return "not anymore";
+
+        if (lower.contains("fuck") ||
+                lower.contains("kill"))
+            return "language changes nothing";
+
+        if (normalized.endsWith("?"))
+            return GENERIC_REPLIES[
+                    RANDOM.nextInt(GENERIC_REPLIES.length)
+            ];
+
+        return GENERIC_REPLIES[
+                RANDOM.nextInt(GENERIC_REPLIES.length)
+        ];
     }
+
+    // =========================================================
+    // TICK
+    // =========================================================
 
     public static void tick(MinecraftClient client) {
         InsanityManager.tick(client);
@@ -159,15 +314,91 @@ public final class HorrorManager {
             vhsTicks = 0;
             removeDoppelganger(client);
             restoreTorches(client);
-            eyesTicks = peripheralTicks = distortionTicks = torchTicks = tabIllusionTicks = 0;
+
+            eyesTicks =
+                    peripheralTicks =
+                    distortionTicks =
+                    torchTicks =
+                    tabIllusionTicks = 0;
+
+            showYourselfCooldown = 0;
+            showYourselfDelay = 0;
+            showYourselfPending = false;
+
             return;
         }
 
-        if (replyDelay > 0) replyDelay--;
-        if (replyDelay == 0 && pendingReply != null) {
+        // =====================================================
+        // SHOW YOURSELF COOLDOWN
+        // =====================================================
+
+        if (showYourselfCooldown > 0) {
+            showYourselfCooldown--;
+        }
+
+        // =====================================================
+        // SHOW YOURSELF DELAY
+        // =====================================================
+
+        if (showYourselfPending) {
+
+            if (showYourselfDelay > 0) {
+                showYourselfDelay--;
+            }
+
+            if (showYourselfDelay == 0) {
+
+                showYourselfPending = false;
+
+                if (client.player != null &&
+                        client.world != null) {
+
+                    // Spawn Shadow.
+                    fireDirectorFigure(client);
+
+                    // Whisper when Shadow appears.
+                    client.player.playSound(
+                            ModSounds.WHISPER,
+                            0.35f + RANDOM.nextFloat() * 0.25f,
+                            0.55f + RANDOM.nextFloat() * 0.25f
+                    );
+
+                    // Increase insanity.
+                    InsanityManager.add(
+                            5.0f + RANDOM.nextFloat() * 3.0f
+                    );
+
+                    // Short glitch effect.
+                    fireDirectorGlitch();
+
+                    // Final message.
+                    client.player.sendMessage(
+                            Text.literal(
+                                    "You asked me to show myself."
+                            ).formatted(Formatting.DARK_RED),
+                            false
+                    );
+                }
+            }
+        }
+
+        // =====================================================
+        // NORMAL REPLY DELAY
+        // =====================================================
+
+        if (replyDelay > 0)
+            replyDelay--;
+
+        if (replyDelay == 0 &&
+                pendingReply != null) {
+
             deliverReply(client, pendingReply);
             pendingReply = null;
         }
+
+        // =====================================================
+        // EFFECT TIMERS
+        // =====================================================
 
         if (glitchTicks > 0) glitchTicks--;
         if (vhsTicks > 0) vhsTicks--;
@@ -175,379 +406,1351 @@ public final class HorrorManager {
         if (peripheralTicks > 0) peripheralTicks--;
         if (distortionTicks > 0) distortionTicks--;
         if (tabIllusionTicks > 0) tabIllusionTicks--;
-        if (tabMessageCooldown > 0) tabMessageCooldown--;
 
-        if (doppelgangerTicks > 0 && doppelganger != null) {
+        if (tabMessageCooldown > 0)
+            tabMessageCooldown--;
+
+        // =====================================================
+        // DOPPELGANGER
+        // =====================================================
+
+        if (doppelgangerTicks > 0 &&
+                doppelganger != null) {
+
             doppelgangerTicks--;
             doppelganger.horrorTick(client.player);
+
         } else if (doppelganger != null) {
+
             removeDoppelganger(client);
         }
 
+        // =====================================================
+        // TORCH ILLUSION
+        // =====================================================
+
         if (torchTicks > 0) {
+
             torchTicks--;
-            if (torchTicks == 0) restoreTorches(client);
+
+            if (torchTicks == 0)
+                restoreTorches(client);
         }
 
+        // =====================================================
+        // MAIN FIGURE
+        // =====================================================
+
         if (figureTicks > 0) {
+
             figureTicks--;
+
             if (figure != null) {
+
                 figure.horrorTick(client.player);
+
                 if (HorrorConfig.ENABLE_TOUCH_DISCONNECT &&
-                        figure.getBoundingBox().expand(0.30).intersects(client.player.getBoundingBox())) {
+                        figure.getBoundingBox()
+                                .expand(0.30)
+                                .intersects(
+                                        client.player.getBoundingBox()
+                                )) {
+
                     InsanityManager.add(20);
-                    client.world.disconnect(Text.literal("You were touched."));
+
+                    client.world.disconnect(
+                            Text.literal("You were touched.")
+                    );
+
                     return;
                 }
+
             }
+
         } else if (figure != null) {
+
             removeFigure(client);
         }
     }
 
-    private static void deliverReply(MinecraftClient client, String reply) {
+    // =========================================================
+    // DELIVER REPLY
+    // =========================================================
+
+    private static void deliverReply(
+            MinecraftClient client,
+            String reply
+    ) {
         if (client.player == null) return;
+
         boolean rare = RANDOM.nextInt(100) < 10;
+
         if (rare) {
-            String template = RARE_GLITCH_REPLIES[RANDOM.nextInt(RARE_GLITCH_REPLIES.length)];
-            reply = template.replace("{input}", reply);
-            client.player.sendMessage(glitchText(reply), false);
+
+            String template =
+                    RARE_GLITCH_REPLIES[
+                            RANDOM.nextInt(
+                                    RARE_GLITCH_REPLIES.length
+                            )
+                    ];
+
+            reply = template.replace(
+                    "{input}",
+                    reply
+            );
+
+            client.player.sendMessage(
+                    glitchText(reply),
+                    false
+            );
+
             fireDirectorGlitch();
-            client.player.playSound(ModSounds.GLITCH, 0.18f + RANDOM.nextFloat() * 0.18f, 0.75f + RANDOM.nextFloat() * 0.45f);
+
+            client.player.playSound(
+                    ModSounds.GLITCH,
+                    0.18f + RANDOM.nextFloat() * 0.18f,
+                    0.75f + RANDOM.nextFloat() * 0.45f
+            );
+
         } else {
-            client.player.sendMessage(coloredEntityText(reply), false);
+
+            client.player.sendMessage(
+                    coloredEntityText(reply),
+                    false
+            );
+
             if (RANDOM.nextInt(100) < 55) {
-                client.player.playSound(ModSounds.WHISPER, 0.10f + RANDOM.nextFloat() * 0.20f, 0.72f + RANDOM.nextFloat() * 0.45f);
+
+                client.player.playSound(
+                        ModSounds.WHISPER,
+                        0.10f + RANDOM.nextFloat() * 0.20f,
+                        0.72f + RANDOM.nextFloat() * 0.45f
+                );
             }
         }
     }
 
-    public static void fireDirectorMessage(MinecraftClient client) {
+    // =========================================================
+    // DIRECTOR EVENTS
+    // =========================================================
+
+    public static void fireDirectorMessage(
+            MinecraftClient client
+    ) {
         if (client.player == null) return;
-        client.player.sendMessage(coloredEntityText(MESSAGES[RANDOM.nextInt(MESSAGES.length)]), false);
-        InsanityManager.add(1.0f + RANDOM.nextFloat() * 2.5f);
+
+        client.player.sendMessage(
+                coloredEntityText(
+                        MESSAGES[
+                                RANDOM.nextInt(
+                                        MESSAGES.length
+                                )
+                        ]
+                ),
+                false
+        );
+
+        InsanityManager.add(
+                1.0f + RANDOM.nextFloat() * 2.5f
+        );
     }
 
     public static void fireDirectorGlitch() {
-        int level = InsanityManager.getLevelNumber();
-        glitchTicks = 2 + RANDOM.nextInt(5 + level * 3);
+        int level =
+                InsanityManager.getLevelNumber();
+
+        glitchTicks =
+                2 + RANDOM.nextInt(
+                        5 + level * 3
+                );
+
         glitchStyle = RANDOM.nextInt(6);
-        InsanityManager.add(0.8f + RANDOM.nextFloat() * 1.8f);
+
+        InsanityManager.add(
+                0.8f + RANDOM.nextFloat() * 1.8f
+        );
     }
 
-    public static void fireDirectorWhisper(MinecraftClient client) {
+    public static void fireDirectorWhisper(
+            MinecraftClient client
+    ) {
         if (client.player == null) return;
-        client.player.playSound(ModSounds.WHISPER, 0.20f + RANDOM.nextFloat() * 0.45f,
-                0.70f + RANDOM.nextFloat() * 0.55f);
-        if (RANDOM.nextInt(100) < 18) fireDirectorGlitch();
-        InsanityManager.add(1.0f + RANDOM.nextFloat() * 3.0f);
+
+        client.player.playSound(
+                ModSounds.WHISPER,
+                0.20f + RANDOM.nextFloat() * 0.45f,
+                0.70f + RANDOM.nextFloat() * 0.55f
+        );
+
+        if (RANDOM.nextInt(100) < 18)
+            fireDirectorGlitch();
+
+        InsanityManager.add(
+                1.0f + RANDOM.nextFloat() * 3.0f
+        );
     }
 
-    public static void fireDirectorFigure(MinecraftClient client) {
-        if (figure == null && client.player != null && client.world != null) {
-            spawnFigure(client, InsanityManager.getLevelNumber());
+    public static void fireDirectorFigure(
+            MinecraftClient client
+    ) {
+        if (figure == null &&
+                client.player != null &&
+                client.world != null) {
+
+            spawnFigure(
+                    client,
+                    InsanityManager.getLevelNumber()
+            );
         }
     }
 
-    public static void fireDecoy(MinecraftClient client) {
+    public static void fireDecoy(
+            MinecraftClient client
+    ) {
         fireDirectorGlitch();
+
         if (client.player != null) {
-            client.player.playSound(ModSounds.STATIC, 0.12f, 0.6f + RANDOM.nextFloat() * 0.7f);
+
+            client.player.playSound(
+                    ModSounds.STATIC,
+                    0.12f,
+                    0.6f + RANDOM.nextFloat() * 0.7f
+            );
         }
     }
 
     public static void fireDirectorVhs() {
+
         if (vhsTicks > 0) return;
+
         // Rare event: between 8 and 55 seconds.
-        vhsTicks = 160 + RANDOM.nextInt(950);
-        MinecraftClient client = MinecraftClient.getInstance();
+        vhsTicks =
+                160 + RANDOM.nextInt(950);
+
+        MinecraftClient client =
+                MinecraftClient.getInstance();
+
         if (client.player != null) {
-            client.player.playSound(ModSounds.VHS, 0.10f + RANDOM.nextFloat() * 0.12f, 0.82f + RANDOM.nextFloat() * 0.18f);
+
+            client.player.playSound(
+                    ModSounds.VHS,
+                    0.10f + RANDOM.nextFloat() * 0.12f,
+                    0.82f + RANDOM.nextFloat() * 0.18f
+            );
         }
-        InsanityManager.add(2.0f + RANDOM.nextFloat() * 3.5f);
+
+        InsanityManager.add(
+                2.0f + RANDOM.nextFloat() * 3.5f
+        );
     }
 
-    private static void spawnFigure(MinecraftClient client, int level) {
+    // =========================================================
+    // SPAWN SHADOW
+    // =========================================================
+
+    private static void spawnFigure(
+            MinecraftClient client,
+            int level
+    ) {
         double angle;
         double distance;
-        if (level >= 4 && RANDOM.nextInt(100) < 45) {
-            angle = Math.toRadians(client.player.getYaw() + 180.0);
-            distance = 5.0 + RANDOM.nextDouble() * 5.0;
+
+        if (level >= 4 &&
+                RANDOM.nextInt(100) < 45) {
+
+            angle =
+                    Math.toRadians(
+                            client.player.getYaw() + 180.0
+                    );
+
+            distance =
+                    5.0 + RANDOM.nextDouble() * 5.0;
+
         } else {
-            angle = RANDOM.nextDouble() * Math.PI * 2.0;
-            distance = HorrorConfig.FIGURE_MIN_DISTANCE +
-                    RANDOM.nextDouble() * (HorrorConfig.FIGURE_MAX_DISTANCE - HorrorConfig.FIGURE_MIN_DISTANCE);
+
+            angle =
+                    RANDOM.nextDouble() *
+                            Math.PI * 2.0;
+
+            distance =
+                    HorrorConfig.FIGURE_MIN_DISTANCE +
+                    RANDOM.nextDouble() *
+                    (
+                            HorrorConfig.FIGURE_MAX_DISTANCE -
+                            HorrorConfig.FIGURE_MIN_DISTANCE
+                    );
         }
 
-        double x = client.player.getX() + Math.cos(angle) * distance;
-        double z = client.player.getZ() + Math.sin(angle) * distance;
-        ShadowEntity entity = new ShadowEntity(client.world, client.player.getGameProfile(), false);
-        entity.refreshPositionAndAngles(x, client.player.getY(), z, RANDOM.nextFloat() * 360.0f, 0.0f);
+        double x =
+                client.player.getX() +
+                        Math.cos(angle) * distance;
+
+        double z =
+                client.player.getZ() +
+                        Math.sin(angle) * distance;
+
+        ShadowEntity entity =
+                new ShadowEntity(
+                        client.world,
+                        client.player.getGameProfile(),
+                        false
+                );
+
+        entity.refreshPositionAndAngles(
+                x,
+                client.player.getY(),
+                z,
+                RANDOM.nextFloat() * 360.0f,
+                0.0f
+        );
+
         entity.setNoGravity(true);
         entity.setInvisible(false);
+
         client.world.addEntity(entity);
+
         figure = entity;
-        figureTicks = HorrorConfig.FIGURE_LIFETIME_TICKS + level * 20;
-        InsanityManager.add(4.0f + level * 1.5f);
+
+        figureTicks =
+                HorrorConfig.FIGURE_LIFETIME_TICKS +
+                        level * 20;
+
+        InsanityManager.add(
+                4.0f + level * 1.5f
+        );
     }
 
-    private static void removeFigure(MinecraftClient client) {
+    private static void removeFigure(
+            MinecraftClient client
+    ) {
         if (figure != null) {
-            figure.remove(net.minecraft.entity.Entity.RemovalReason.DISCARDED);
+
+            figure.remove(
+                    net.minecraft.entity.Entity.RemovalReason.DISCARDED
+            );
+
             figure = null;
         }
+
         figureTicks = 0;
     }
 
-    private static MutableText coloredEntityText(String message) {
+    // =========================================================
+    // CHAT COLORS
+    // =========================================================
+
+    private static MutableText coloredEntityText(
+            String message
+    ) {
         int roll = RANDOM.nextInt(100);
-        Formatting color = roll < 58 ? Formatting.DARK_RED : roll < 76 ? Formatting.RED : roll < 91 ? Formatting.DARK_GRAY : Formatting.BLACK;
-        MutableText text = Text.literal(message).formatted(color);
-        if (roll >= 72 && RANDOM.nextBoolean()) text.formatted(Formatting.BOLD);
+
+        Formatting color =
+                roll < 58
+                        ? Formatting.DARK_RED
+                        : roll < 76
+                        ? Formatting.RED
+                        : roll < 91
+                        ? Formatting.DARK_GRAY
+                        : Formatting.BLACK;
+
+        MutableText text =
+                Text.literal(message).formatted(color);
+
+        if (roll >= 72 &&
+                RANDOM.nextBoolean()) {
+
+            text.formatted(Formatting.BOLD);
+        }
+
         return text;
     }
 
-    private static MutableText glitchText(String message) {
+    private static MutableText glitchText(
+            String message
+    ) {
         MutableText out = Text.empty();
-        Formatting[] colors = {Formatting.DARK_RED, Formatting.RED, Formatting.DARK_GRAY, Formatting.BLACK, Formatting.GRAY};
+
+        Formatting[] colors = {
+                Formatting.DARK_RED,
+                Formatting.RED,
+                Formatting.DARK_GRAY,
+                Formatting.BLACK,
+                Formatting.GRAY
+        };
+
         for (int i = 0; i < message.length(); i++) {
+
             char c = message.charAt(i);
-            MutableText part = Text.literal(String.valueOf(c)).formatted(colors[RANDOM.nextInt(colors.length)]);
-            if (RANDOM.nextInt(100) < 28) part.formatted(Formatting.OBFUSCATED);
-            if (RANDOM.nextInt(100) < 18) part.formatted(Formatting.BOLD);
+
+            MutableText part =
+                    Text.literal(
+                            String.valueOf(c)
+                    ).formatted(
+                            colors[
+                                    RANDOM.nextInt(
+                                            colors.length
+                                    )
+                            ]
+                    );
+
+            if (RANDOM.nextInt(100) < 28)
+                part.formatted(
+                        Formatting.OBFUSCATED
+                );
+
+            if (RANDOM.nextInt(100) < 18)
+                part.formatted(
+                        Formatting.BOLD
+                );
+
             out.append(part);
         }
+
         return out;
     }
 
+    // =========================================================
+    // TAB ILLUSION
+    // =========================================================
 
-    public static void fireTabIllusion(MinecraftClient client) {
-        if (client.player == null || tabMessageCooldown > 0) return;
-        List<String> names = new ArrayList<>();
-        for (PlayerListEntry entry : client.player.networkHandler.getPlayerList()) {
-            if (entry.getProfile() != null && entry.getProfile().name() != null) names.add(entry.getProfile().name());
+    public static void fireTabIllusion(
+            MinecraftClient client
+    ) {
+        if (client.player == null ||
+                tabMessageCooldown > 0)
+            return;
+
+        List<String> names =
+                new ArrayList<>();
+
+        for (PlayerListEntry entry :
+                client.player.networkHandler
+                        .getPlayerList()) {
+
+            if (entry.getProfile() != null &&
+                    entry.getProfile().name() != null) {
+
+                names.add(
+                        entry.getProfile().name()
+                );
+            }
         }
-       if (names.isEmpty()) names.add(client.player.getGameProfile().name());
-        String name = names.get(RANDOM.nextInt(names.size()));
+
+        if (names.isEmpty())
+            names.add(
+                    client.player
+                            .getGameProfile()
+                            .name()
+            );
+
+        String name =
+                names.get(
+                        RANDOM.nextInt(
+                                names.size()
+                        )
+                );
+
         String[] patterns = {
-                name + " was not found", name + " can't hide", name + " is behind you",
-                name + " left something here", name + " was here first", name + " is watching",
-                name + " doesn't exist", name + " is not alone", name + " saw you"
+                name + " was not found",
+                name + " can't hide",
+                name + " is behind you",
+                name + " left something here",
+                name + " was here first",
+                name + " is watching",
+                name + " doesn't exist",
+                name + " is not alone",
+                name + " saw you"
         };
-        tabIllusion = patterns[RANDOM.nextInt(patterns.length)];
-        tabIllusionTicks = 55 + RANDOM.nextInt(100);
-        tabMessageCooldown = 500 + RANDOM.nextInt(1000);
-        client.player.sendMessage(glitchText(tabIllusion), false);
-        InsanityManager.add(2.0f + RANDOM.nextFloat() * 3.0f);
+
+        tabIllusion =
+                patterns[
+                        RANDOM.nextInt(
+                                patterns.length
+                        )
+                ];
+
+        tabIllusionTicks =
+                55 + RANDOM.nextInt(100);
+
+        tabMessageCooldown =
+                500 + RANDOM.nextInt(1000);
+
+        client.player.sendMessage(
+                glitchText(tabIllusion),
+                false
+        );
+
+        InsanityManager.add(
+                2.0f + RANDOM.nextFloat() * 3.0f
+        );
     }
 
+    // =========================================================
+    // OTHER EVENTS
+    // =========================================================
+
     public static void fireEyes() {
-        eyesTicks = 12 + RANDOM.nextInt(35);
-        InsanityManager.add(1.5f + RANDOM.nextFloat() * 2.5f);
+        eyesTicks =
+                12 + RANDOM.nextInt(35);
+
+        InsanityManager.add(
+                1.5f + RANDOM.nextFloat() * 2.5f
+        );
     }
 
     public static void firePeripheral() {
-        peripheralTicks = 5 + RANDOM.nextInt(18);
-        InsanityManager.add(1.0f + RANDOM.nextFloat() * 2.0f);
+        peripheralTicks =
+                5 + RANDOM.nextInt(18);
+
+        InsanityManager.add(
+                1.0f + RANDOM.nextFloat() * 2.0f
+        );
     }
 
     public static void fireWorldDistortion() {
-        distortionTicks = 10 + RANDOM.nextInt(55);
-        glitchStyle = RANDOM.nextInt(8);
-        if (RANDOM.nextInt(100) < 45) fireDirectorGlitch();
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.player != null) client.player.playSound(ModSounds.STATIC, 0.08f, 0.55f + RANDOM.nextFloat() * 0.65f);
-        InsanityManager.add(1.2f + RANDOM.nextFloat() * 2.8f);
-    }
 
-    public static void fireFootsteps(MinecraftClient client) {
-        if (client.player == null || client.world == null) return;
-        float yaw = client.player.getYaw();
-        double angle = Math.toRadians(yaw + 180.0 + (RANDOM.nextDouble() * 28.0 - 14.0));
-        double distance = 2.4 + RANDOM.nextDouble() * 2.5;
-        double x = client.player.getX() + Math.sin(angle) * distance;
-        double z = client.player.getZ() - Math.cos(angle) * distance;
-        client.world.playSoundClient(x, client.player.getY(), z, ModSounds.FOOTSTEPS,
-                SoundCategory.AMBIENT, 0.65f + RANDOM.nextFloat() * 0.25f, 0.72f + RANDOM.nextFloat() * 0.2f, true);
-        if (RANDOM.nextInt(100) < 45) {
-            // A second step makes the direction more convincing without moving the player.
-            client.world.playSoundClient(x + 0.35, client.player.getY(), z + 0.25, ModSounds.FOOTSTEPS,
-                    SoundCategory.AMBIENT, 0.5f, 0.65f + RANDOM.nextFloat() * 0.2f, true);
+        distortionTicks =
+                10 + RANDOM.nextInt(55);
+
+        glitchStyle =
+                RANDOM.nextInt(8);
+
+        if (RANDOM.nextInt(100) < 45)
+            fireDirectorGlitch();
+
+        MinecraftClient client =
+                MinecraftClient.getInstance();
+
+        if (client.player != null) {
+
+            client.player.playSound(
+                    ModSounds.STATIC,
+                    0.08f,
+                    0.55f + RANDOM.nextFloat() * 0.65f
+            );
         }
-        InsanityManager.add(1.0f + RANDOM.nextFloat() * 2.5f);
+
+        InsanityManager.add(
+                1.2f + RANDOM.nextFloat() * 2.8f
+        );
     }
 
-    public static void fireTorchIllusion(MinecraftClient client) {
-        if (client.player == null || client.world == null || torchTicks > 0) return;
+    public static void fireFootsteps(
+            MinecraftClient client
+    ) {
+        if (client.player == null ||
+                client.world == null)
+            return;
+
+        float yaw =
+                client.player.getYaw();
+
+        double angle =
+                Math.toRadians(
+                        yaw +
+                        180.0 +
+                        (
+                                RANDOM.nextDouble() *
+                                28.0 - 14.0
+                        )
+                );
+
+        double distance =
+                2.4 +
+                RANDOM.nextDouble() * 2.5;
+
+        double x =
+                client.player.getX() +
+                        Math.sin(angle) * distance;
+
+        double z =
+                client.player.getZ() -
+                        Math.cos(angle) * distance;
+
+        client.world.playSoundClient(
+                x,
+                client.player.getY(),
+                z,
+                ModSounds.FOOTSTEPS,
+                SoundCategory.AMBIENT,
+                0.65f + RANDOM.nextFloat() * 0.25f,
+                0.72f + RANDOM.nextFloat() * 0.2f,
+                true
+        );
+
+        if (RANDOM.nextInt(100) < 45) {
+
+            // A second step makes the direction more convincing.
+            client.world.playSoundClient(
+                    x + 0.35,
+                    client.player.getY(),
+                    z + 0.25,
+                    ModSounds.FOOTSTEPS,
+                    SoundCategory.AMBIENT,
+                    0.5f,
+                    0.65f + RANDOM.nextFloat() * 0.2f,
+                    true
+            );
+        }
+
+        InsanityManager.add(
+                1.0f + RANDOM.nextFloat() * 2.5f
+        );
+    }
+
+    // =========================================================
+    // TORCH ILLUSION
+    // =========================================================
+
+    public static void fireTorchIllusion(
+            MinecraftClient client
+    ) {
+        if (client.player == null ||
+                client.world == null ||
+                torchTicks > 0)
+            return;
+
         hiddenTorches.clear();
-        BlockPos origin = client.player.getBlockPos();
+
+        BlockPos origin =
+                client.player.getBlockPos();
+
         int radius = 20;
+
         for (int x = -radius; x <= radius; x++) {
+
             for (int y = -radius; y <= radius; y++) {
+
                 for (int z = -radius; z <= radius; z++) {
-                    if (x*x + y*y + z*z > radius*radius) continue;
-                    BlockPos pos = origin.add(x, y, z);
-                    BlockState state = client.world.getBlockState(pos);
-                    if (isTorch(state.getBlock())) hiddenTorches.put(pos, state);
+
+                    if (x * x +
+                            y * y +
+                            z * z >
+                            radius * radius)
+                        continue;
+
+                    BlockPos pos =
+                            origin.add(x, y, z);
+
+                    BlockState state =
+                            client.world.getBlockState(pos);
+
+                    if (isTorch(
+                            state.getBlock()
+                    )) {
+
+                        hiddenTorches.put(
+                                pos,
+                                state
+                        );
+                    }
                 }
             }
         }
-        if (hiddenTorches.isEmpty()) return;
-        for (BlockPos pos : hiddenTorches.keySet()) client.world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
-        torchTicks = 80 + RANDOM.nextInt(180);
-        client.player.playSound(ModSounds.STATIC, 0.12f, 0.6f);
-        InsanityManager.add(3.0f + RANDOM.nextFloat() * 4.0f);
+
+        if (hiddenTorches.isEmpty())
+            return;
+
+        for (BlockPos pos :
+                hiddenTorches.keySet()) {
+
+            client.world.setBlockState(
+                    pos,
+                    Blocks.AIR.getDefaultState(),
+                    Block.NOTIFY_LISTENERS
+            );
+        }
+
+        torchTicks =
+                80 + RANDOM.nextInt(180);
+
+        client.player.playSound(
+                ModSounds.STATIC,
+                0.12f,
+                0.6f
+        );
+
+        InsanityManager.add(
+                3.0f + RANDOM.nextFloat() * 4.0f
+        );
     }
 
-    private static boolean isTorch(Block block) {
-        return block == Blocks.TORCH || block == Blocks.WALL_TORCH ||
-                block == Blocks.SOUL_TORCH || block == Blocks.SOUL_WALL_TORCH ||
-                block == Blocks.LANTERN || block == Blocks.SOUL_LANTERN;
+    private static boolean isTorch(
+            Block block
+    ) {
+        return block == Blocks.TORCH ||
+                block == Blocks.WALL_TORCH ||
+                block == Blocks.SOUL_TORCH ||
+                block == Blocks.SOUL_WALL_TORCH ||
+                block == Blocks.LANTERN ||
+                block == Blocks.SOUL_LANTERN;
     }
 
-    private static void restoreTorches(MinecraftClient client) {
-        if (client.world == null || hiddenTorches.isEmpty()) return;
-        for (Map.Entry<BlockPos, BlockState> entry : hiddenTorches.entrySet()) {
-            if (client.world.getBlockState(entry.getKey()).isAir()) {
-                client.world.setBlockState(entry.getKey(), entry.getValue(), Block.NOTIFY_LISTENERS);
+    private static void restoreTorches(
+            MinecraftClient client
+    ) {
+        if (client.world == null ||
+                hiddenTorches.isEmpty())
+            return;
+
+        for (Map.Entry<BlockPos, BlockState> entry :
+                hiddenTorches.entrySet()) {
+
+            if (client.world
+                    .getBlockState(
+                            entry.getKey()
+                    ).isAir()) {
+
+                client.world.setBlockState(
+                        entry.getKey(),
+                        entry.getValue(),
+                        Block.NOTIFY_LISTENERS
+                );
             }
         }
+
         hiddenTorches.clear();
     }
 
-    public static void fireDoppelganger(MinecraftClient client) {
-        if (client.player == null || client.world == null || doppelganger != null || InsanityManager.getLevelNumber() < 3) return;
-        double angle = Math.toRadians(client.player.getYaw() + 180.0 + (RANDOM.nextDouble() * 35.0 - 17.5));
-        double distance = 7.0 + RANDOM.nextDouble() * 11.0;
-        double x = client.player.getX() + Math.sin(angle) * distance;
-        double z = client.player.getZ() - Math.cos(angle) * distance;
-        doppelganger = new ShadowEntity(client.world, client.player.getGameProfile(), RANDOM.nextBoolean());
-        doppelganger.setId(-900000 - RANDOM.nextInt(90000));
-        doppelganger.refreshPositionAndAngles(x, client.player.getY(), z, client.player.getYaw() + 180.0f, 0.0f);
+    // =========================================================
+    // DOPPELGANGER
+    // =========================================================
+
+    public static void fireDoppelganger(
+            MinecraftClient client
+    ) {
+        if (client.player == null ||
+                client.world == null ||
+                doppelganger != null ||
+                InsanityManager.getLevelNumber() < 3)
+            return;
+
+        double angle =
+                Math.toRadians(
+                        client.player.getYaw() +
+                        180.0 +
+                        (
+                                RANDOM.nextDouble() *
+                                35.0 - 17.5
+                        )
+                );
+
+        double distance =
+                7.0 +
+                RANDOM.nextDouble() * 11.0;
+
+        double x =
+                client.player.getX() +
+                        Math.sin(angle) * distance;
+
+        double z =
+                client.player.getZ() -
+                        Math.cos(angle) * distance;
+
+        doppelganger =
+                new ShadowEntity(
+                        client.world,
+                        client.player.getGameProfile(),
+                        RANDOM.nextBoolean()
+                );
+
+        doppelganger.setId(
+                -900000 -
+                        RANDOM.nextInt(90000)
+        );
+
+        doppelganger.refreshPositionAndAngles(
+                x,
+                client.player.getY(),
+                z,
+                client.player.getYaw() + 180.0f,
+                0.0f
+        );
+
         doppelganger.setNoGravity(true);
-        client.world.addEntity(doppelganger);
-        doppelgangerTicks = 220 + RANDOM.nextInt(300);
-        InsanityManager.add(6.0f + RANDOM.nextFloat() * 5.0f);
+
+        client.world.addEntity(
+                doppelganger
+        );
+
+        doppelgangerTicks =
+                220 + RANDOM.nextInt(300);
+
+        InsanityManager.add(
+                6.0f + RANDOM.nextFloat() * 5.0f
+        );
     }
 
-    private static void removeDoppelganger(MinecraftClient client) {
-        if (doppelganger != null) doppelganger.remove(net.minecraft.entity.Entity.RemovalReason.DISCARDED);
+    private static void removeDoppelganger(
+            MinecraftClient client
+    ) {
+        if (doppelganger != null) {
+
+            doppelganger.remove(
+                    net.minecraft.entity.Entity.RemovalReason.DISCARDED
+            );
+        }
+
         doppelganger = null;
         doppelgangerTicks = 0;
     }
 
-    public static void renderOverlay(DrawContext context, RenderTickCounter tickCounter) {
-        if (glitchTicks <= 0 && vhsTicks <= 0 && eyesTicks <= 0 && peripheralTicks <= 0 && distortionTicks <= 0 && tabIllusionTicks <= 0) return;
-        int width = context.getScaledWindowWidth();
-        int height = context.getScaledWindowHeight();
-        int level = InsanityManager.getLevelNumber();
+    // =========================================================
+    // OVERLAY
+    // =========================================================
 
-        if (vhsTicks > 0) renderVhs(context, width, height, level);
-        if (glitchTicks > 0) renderGlitch(context, width, height, level);
-        if (distortionTicks > 0) renderWorldDistortion(context, width, height);
-        if (eyesTicks > 0) renderEyes(context, width, height);
-        if (peripheralTicks > 0) renderPeripheral(context, width, height);
-        if (tabIllusionTicks > 0 && tabIllusion != null) renderTabIllusion(context, width, height);
+    public static void renderOverlay(
+            DrawContext context,
+            RenderTickCounter tickCounter
+    ) {
+        if (glitchTicks <= 0 &&
+                vhsTicks <= 0 &&
+                eyesTicks <= 0 &&
+                peripheralTicks <= 0 &&
+                distortionTicks <= 0 &&
+                tabIllusionTicks <= 0)
+            return;
+
+        int width =
+                context.getScaledWindowWidth();
+
+        int height =
+                context.getScaledWindowHeight();
+
+        int level =
+                InsanityManager.getLevelNumber();
+
+        if (vhsTicks > 0)
+            renderVhs(
+                    context,
+                    width,
+                    height,
+                    level
+            );
+
+        if (glitchTicks > 0)
+            renderGlitch(
+                    context,
+                    width,
+                    height,
+                    level
+            );
+
+        if (distortionTicks > 0)
+            renderWorldDistortion(
+                    context,
+                    width,
+                    height
+            );
+
+        if (eyesTicks > 0)
+            renderEyes(
+                    context,
+                    width,
+                    height
+            );
+
+        if (peripheralTicks > 0)
+            renderPeripheral(
+                    context,
+                    width,
+                    height
+            );
+
+        if (tabIllusionTicks > 0 &&
+                tabIllusion != null)
+            renderTabIllusion(
+                    context,
+                    width,
+                    height
+            );
     }
 
+    // =========================================================
+    // WORLD DISTORTION
+    // =========================================================
 
-    private static void renderWorldDistortion(DrawContext context, int width, int height) {
-        int alpha = 12 + RANDOM.nextInt(32);
-        context.fill(0, 0, width, height, (alpha << 24) | 0x220000);
-        int strips = 3 + RANDOM.nextInt(7);
+    private static void renderWorldDistortion(
+            DrawContext context,
+            int width,
+            int height
+    ) {
+        int alpha =
+                12 + RANDOM.nextInt(32);
+
+        context.fill(
+                0,
+                0,
+                width,
+                height,
+                (alpha << 24) | 0x220000
+        );
+
+        int strips =
+                3 + RANDOM.nextInt(7);
+
         for (int i = 0; i < strips; i++) {
-            int y = RANDOM.nextInt(Math.max(1, height));
-            int h = 1 + RANDOM.nextInt(5);
-            int c = RANDOM.nextBoolean() ? 0x330000 : 0x101010;
-            context.fill(0, y, width, Math.min(height, y + h), (18 + RANDOM.nextInt(45) << 24) | c);
+
+            int y =
+                    RANDOM.nextInt(
+                            Math.max(1, height)
+                    );
+
+            int h =
+                    1 + RANDOM.nextInt(5);
+
+            int c =
+                    RANDOM.nextBoolean()
+                            ? 0x330000
+                            : 0x101010;
+
+            context.fill(
+                    0,
+                    y,
+                    width,
+                    Math.min(
+                            height,
+                            y + h
+                    ),
+                    (
+                            18 +
+                            RANDOM.nextInt(45)
+                    << 24) | c
+            );
         }
     }
 
-    private static void renderEyes(DrawContext context, int width, int height) {
-        int side = RANDOM.nextInt(4);
-        int x = side == 0 ? 12 + RANDOM.nextInt(Math.max(1, width / 5)) : side == 1 ? width - 35 - RANDOM.nextInt(Math.max(1, width / 5)) : RANDOM.nextInt(Math.max(1, width));
-        int y = side < 2 ? 45 + RANDOM.nextInt(Math.max(1, height - 90)) : RANDOM.nextInt(Math.max(1, height));
-        int gap = 7 + RANDOM.nextInt(8);
-        int size = 2 + RANDOM.nextInt(3);
-        int color = RANDOM.nextInt(100) < 75 ? 0xAA0000 : 0x080808;
-        context.fill(x, y, x + size, y + size, 0xD0000000 | color);
-        context.fill(x + gap, y, x + gap + size, y + size, 0xD0000000 | color);
+    // =========================================================
+    // EYES
+    // =========================================================
+
+    private static void renderEyes(
+            DrawContext context,
+            int width,
+            int height
+    ) {
+        int side =
+                RANDOM.nextInt(4);
+
+        int x =
+                side == 0
+                        ? 12 + RANDOM.nextInt(
+                                Math.max(1, width / 5)
+                        )
+                        : side == 1
+                        ? width - 35 -
+                                RANDOM.nextInt(
+                                        Math.max(
+                                                1,
+                                                width / 5
+                                        )
+                                )
+                        : RANDOM.nextInt(
+                                Math.max(1, width)
+                        );
+
+        int y =
+                side < 2
+                        ? 45 + RANDOM.nextInt(
+                                Math.max(
+                                        1,
+                                        height - 90
+                                )
+                        )
+                        : RANDOM.nextInt(
+                                Math.max(1, height)
+                        );
+
+        int gap =
+                7 + RANDOM.nextInt(8);
+
+        int size =
+                2 + RANDOM.nextInt(3);
+
+        int color =
+                RANDOM.nextInt(100) < 75
+                        ? 0xAA0000
+                        : 0x080808;
+
+        context.fill(
+                x,
+                y,
+                x + size,
+                y + size,
+                0xD0000000 | color
+        );
+
+        context.fill(
+                x + gap,
+                y,
+                x + gap + size,
+                y + size,
+                0xD0000000 | color
+        );
+
         if (RANDOM.nextInt(100) < 30) {
-            context.fill(x + 1, y + size + 2, x + gap + size - 1, y + size + 3, 0x88000000);
+
+            context.fill(
+                    x + 1,
+                    y + size + 2,
+                    x + gap + size - 1,
+                    y + size + 3,
+                    0x88000000
+            );
         }
     }
 
-    private static void renderPeripheral(DrawContext context, int width, int height) {
-        int side = RANDOM.nextBoolean() ? 0 : 1;
-        int x = side == 0 ? 0 : width - 8 - RANDOM.nextInt(24);
-        int y = 20 + RANDOM.nextInt(Math.max(1, height - 40));
-        int w = 3 + RANDOM.nextInt(12);
-        int h = 20 + RANDOM.nextInt(70);
-        context.fill(x, y, Math.min(width, x + w), Math.min(height, y + h), 0x7A000000);
-        if (RANDOM.nextBoolean()) context.fill(Math.min(width - 1, x + w), y + 6, Math.min(width, x + w + 2), Math.min(height, y + h - 4), 0xAA550000);
+    // =========================================================
+    // PERIPHERAL
+    // =========================================================
+
+    private static void renderPeripheral(
+            DrawContext context,
+            int width,
+            int height
+    ) {
+        int side =
+                RANDOM.nextBoolean()
+                        ? 0
+                        : 1;
+
+        int x =
+                side == 0
+                        ? 0
+                        : width -
+                                8 -
+                                RANDOM.nextInt(24);
+
+        int y =
+                20 +
+                RANDOM.nextInt(
+                        Math.max(
+                                1,
+                                height - 40
+                        )
+                );
+
+        int w =
+                3 + RANDOM.nextInt(12);
+
+        int h =
+                20 + RANDOM.nextInt(70);
+
+        context.fill(
+                x,
+                y,
+                Math.min(
+                        width,
+                        x + w
+                ),
+                Math.min(
+                        height,
+                        y + h
+                ),
+                0x7A000000
+        );
+
+        if (RANDOM.nextBoolean()) {
+
+            context.fill(
+                    Math.min(
+                            width - 1,
+                            x + w
+                    ),
+                    y + 6,
+                    Math.min(
+                            width,
+                            x + w + 2
+                    ),
+                    Math.min(
+                            height,
+                            y + h - 4
+                    ),
+                    0xAA550000
+            );
+        }
     }
 
-    private static void renderTabIllusion(DrawContext context, int width, int height) {
-        int x = 8 + RANDOM.nextInt(Math.max(1, width / 4));
-        int y = height - 44 - RANDOM.nextInt(50);
-        context.fill(x - 4, y - 3, Math.min(width - 4, x + 260), y + 18, 0x66000000);
-        context.drawText(MinecraftClient.getInstance().textRenderer, Text.literal(tabIllusion).formatted(Formatting.DARK_RED), x, y, 0xFFFFFFFF, true);
+    // =========================================================
+    // TAB ILLUSION RENDER
+    // =========================================================
+
+    private static void renderTabIllusion(
+            DrawContext context,
+            int width,
+            int height
+    ) {
+        int x =
+                8 +
+                RANDOM.nextInt(
+                        Math.max(1, width / 4)
+                );
+
+        int y =
+                height -
+                44 -
+                RANDOM.nextInt(50);
+
+        context.fill(
+                x - 4,
+                y - 3,
+                Math.min(
+                        width - 4,
+                        x + 260
+                ),
+                y + 18,
+                0x66000000
+        );
+
+        context.drawText(
+                MinecraftClient.getInstance()
+                        .textRenderer,
+                Text.literal(tabIllusion)
+                        .formatted(
+                                Formatting.DARK_RED
+                        ),
+                x,
+                y,
+                0xFFFFFFFF,
+                true
+        );
     }
 
-    private static void renderGlitch(DrawContext context, int width, int height, int level) {
-        context.fill(0, 0, width, height, 0x12000000);
-        int bars = 8 + RANDOM.nextInt(18 + level * 7);
+    // =========================================================
+    // GLITCH
+    // =========================================================
+
+    private static void renderGlitch(
+            DrawContext context,
+            int width,
+            int height,
+            int level
+    ) {
+        context.fill(
+                0,
+                0,
+                width,
+                height,
+                0x12000000
+        );
+
+        int bars =
+                8 +
+                RANDOM.nextInt(
+                        18 + level * 7
+                );
+
         for (int i = 0; i < bars; i++) {
-            int y = RANDOM.nextInt(Math.max(1, height));
-            int h = 1 + RANDOM.nextInt(4 + Math.min(5, level));
-            int alpha = 20 + RANDOM.nextInt(110);
-            int color = switch (glitchStyle % 6) {
-                case 0 -> 0xFFFFFF;
-                case 1 -> 0xAA0000;
-                case 2 -> 0xFF2020;
-                case 3 -> 0x111111;
-                case 4 -> 0x770000;
-                default -> 0xCCCCCC;
-            };
-            context.fill(0, y, width, Math.min(height, y + h), (alpha << 24) | color);
+
+            int y =
+                    RANDOM.nextInt(
+                            Math.max(1, height)
+                    );
+
+            int h =
+                    1 +
+                    RANDOM.nextInt(
+                            4 + Math.min(5, level)
+                    );
+
+            int alpha =
+                    20 +
+                    RANDOM.nextInt(110);
+
+            int color =
+                    switch (glitchStyle % 6) {
+                        case 0 -> 0xFFFFFF;
+                        case 1 -> 0xAA0000;
+                        case 2 -> 0xFF2020;
+                        case 3 -> 0x111111;
+                        case 4 -> 0x770000;
+                        default -> 0xCCCCCC;
+                    };
+
+            context.fill(
+                    0,
+                    y,
+                    width,
+                    Math.min(
+                            height,
+                            y + h
+                    ),
+                    (alpha << 24) | color
+            );
         }
 
-        int blocks = 18 + RANDOM.nextInt(42 + level * 20);
+        int blocks =
+                18 +
+                RANDOM.nextInt(
+                        42 + level * 20
+                );
+
         for (int i = 0; i < blocks; i++) {
-            int x = RANDOM.nextInt(Math.max(1, width));
-            int y = RANDOM.nextInt(Math.max(1, height));
-            int w = 1 + RANDOM.nextInt(20 + level * 12);
-            int h = 1 + RANDOM.nextInt(7);
-            int alpha = 12 + RANDOM.nextInt(105);
-            int color = RANDOM.nextInt(100) < 72 ? 0x550000 : 0x111111;
-            context.fill(x, y, Math.min(width, x + w), Math.min(height, y + h), (alpha << 24) | color);
+
+            int x =
+                    RANDOM.nextInt(
+                            Math.max(1, width)
+                    );
+
+            int y =
+                    RANDOM.nextInt(
+                            Math.max(1, height)
+                    );
+
+            int w =
+                    1 +
+                    RANDOM.nextInt(
+                            20 + level * 12
+                    );
+
+            int h =
+                    1 +
+                    RANDOM.nextInt(7);
+
+            int alpha =
+                    12 +
+                    RANDOM.nextInt(105);
+
+            int color =
+                    RANDOM.nextInt(100) < 72
+                            ? 0x550000
+                            : 0x111111;
+
+            context.fill(
+                    x,
+                    y,
+                    Math.min(
+                            width,
+                            x + w
+                    ),
+                    Math.min(
+                            height,
+                            y + h
+                    ),
+                    (alpha << 24) | color
+            );
         }
 
-        if (glitchStyle == 2 || glitchStyle == 4) {
-            context.fill(RANDOM.nextInt(Math.max(1, width / 2)), 0, width, height, 0x08000000);
+        if (glitchStyle == 2 ||
+                glitchStyle == 4) {
+
+            context.fill(
+                    RANDOM.nextInt(
+                            Math.max(
+                                    1,
+                                    width / 2
+                            )
+                    ),
+                    0,
+                    width,
+                    height,
+                    0x08000000
+            );
         }
     }
 
-    private static void renderVhs(DrawContext context, int width, int height, int level) {
-        context.fill(0, 0, width, height, 0x12000000);
-        // Scanlines
+    // =========================================================
+    // VHS
+    // =========================================================
+
+    private static void renderVhs(
+            DrawContext context,
+            int width,
+            int height,
+            int level
+    ) {
+        context.fill(
+                0,
+                0,
+                width,
+                height,
+                0x12000000
+        );
+
+        // Scanlines.
         for (int y = 0; y < height; y += 3) {
-            context.fill(0, y, width, Math.min(height, y + 1), 0x18000000);
+
+            context.fill(
+                    0,
+                    y,
+                    width,
+                    Math.min(
+                            height,
+                            y + 1
+                    ),
+                    0x18000000
+            );
         }
+
         // Rare red/black tracking tears.
-        int tears = 3 + RANDOM.nextInt(4 + level);
+        int tears =
+                3 +
+                RANDOM.nextInt(
+                        4 + level
+                );
+
         for (int i = 0; i < tears; i++) {
-            int y = RANDOM.nextInt(Math.max(1, height));
-            int h = 1 + RANDOM.nextInt(9);
-            int alpha = 18 + RANDOM.nextInt(50);
-            int color = RANDOM.nextInt(100) < 70 ? 0x770000 : 0x111111;
-            context.fill(0, y, width, Math.min(height, y + h), (alpha << 24) | color);
+
+            int y =
+                    RANDOM.nextInt(
+                            Math.max(1, height)
+                    );
+
+            int h =
+                    1 +
+                    RANDOM.nextInt(9);
+
+            int alpha =
+                    18 +
+                    RANDOM.nextInt(50);
+
+            int color =
+                    RANDOM.nextInt(100) < 70
+                            ? 0x770000
+                            : 0x111111;
+
+            context.fill(
+                    0,
+                    y,
+                    width,
+                    Math.min(
+                            height,
+                            y + h
+                    ),
+                    (alpha << 24) | color
+            );
         }
+
         // Slight chromatic split.
         if (RANDOM.nextInt(100) < 35) {
-            int offset = 2 + RANDOM.nextInt(5);
-            context.fill(offset, 0, Math.min(width, offset + 2), height, 0x12000055);
-            context.fill(Math.max(0, width - offset - 2), 0, Math.max(0, width - offset), height, 0x12005500);
+
+            int offset =
+                    2 + RANDOM.nextInt(5);
+
+            context.fill(
+                    offset,
+                    0,
+                    Math.min(
+                            width,
+                            offset + 2
+                    ),
+                    height,
+                    0x12000055
+            );
+
+            context.fill(
+                    Math.max(
+                            0,
+                            width - offset - 2
+                    ),
+                    0,
+                    Math.max(
+                            0,
+                            width - offset
+                    ),
+                    height,
+                    0x12005500
+            );
         }
     }
 }
