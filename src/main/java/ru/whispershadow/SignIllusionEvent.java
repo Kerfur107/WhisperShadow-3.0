@@ -6,10 +6,11 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.DisplayEntity;
+import net.minecraft.entity.decoration.DisplayEntity.TextDisplayEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.Random;
@@ -24,8 +25,10 @@ public final class SignIllusionEvent {
     private static int maxTicks = 0;
 
     private static int entityId = -1;
+    private static int textEntityId = -1;
 
     private static DisplayEntity.BlockDisplayEntity signEntity;
+    private static TextDisplayEntity textEntity;
 
     private static String line1 = "";
     private static String line2 = "";
@@ -112,6 +115,7 @@ public final class SignIllusionEvent {
     }
 
     private static void chooseMessage() {
+
         int level = InsanityManager.getLevelNumber();
 
         if (level <= 1) {
@@ -289,16 +293,9 @@ public final class SignIllusionEvent {
 
         Vec3d look = client.player.getRotationVec(1.0f);
 
-        /*
-         * Табличка появляется примерно в 5 блоках
-         * перед игроком.
-         */
         Vec3d position = client.player.getEyePos()
                 .add(look.multiply(5.0));
 
-        /*
-         * Ставим её немного ниже уровня глаз.
-         */
         position = position.add(
                 0.0,
                 -1.0,
@@ -306,14 +303,11 @@ public final class SignIllusionEvent {
         );
 
         /*
-         * Создаём клиентскую BlockDisplayEntity.
-         *
-         * Это НЕ настоящий блок мира.
-         * Сервер о нём ничего не знает.
+         * ДЕРЕВЯННАЯ ЧАСТЬ ТАБЛИЧКИ
          */
         signEntity =
                 new DisplayEntity.BlockDisplayEntity(
-                        net.minecraft.entity.EntityType.BLOCK_DISPLAY,
+                        EntityType.BLOCK_DISPLAY,
                         world
                 );
 
@@ -323,30 +317,104 @@ public final class SignIllusionEvent {
                 position.z
         );
 
-        /*
-         * Используем модель обычной дубовой таблички.
-         */
         signEntity.setBlockState(
                 Blocks.OAK_SIGN.getDefaultState()
         );
 
-        /*
-         * Поворачиваем табличку к игроку.
-         */
         float yaw =
                 client.player.getYaw() + 180.0f;
 
         signEntity.setYaw(yaw);
         signEntity.setBodyYaw(yaw);
 
-        /*
-         * Уникальный клиентский ID.
-         */
         entityId =
                 200000 +
                         RANDOM.nextInt(50000);
 
         world.addEntity(signEntity);
+
+        /*
+         * ТЕКСТ НА ТАБЛИЧКЕ
+         */
+        textEntity =
+                new TextDisplayEntity(
+                        EntityType.TEXT_DISPLAY,
+                        world
+                );
+
+        /*
+         * Немного выдвигаем текст вперёд,
+         * чтобы он не оказался внутри дерева.
+         */
+        Vec3d textPosition =
+                position.add(
+                        0.0,
+                        0.05,
+                        -0.06
+                );
+
+        textEntity.setPosition(
+                textPosition.x,
+                textPosition.y,
+                textPosition.z
+        );
+
+        String fullText = buildText();
+
+        textEntity.setText(
+                Text.literal(fullText)
+                        .formatted(Formatting.BOLD)
+        );
+
+        /*
+         * Текст смотрит на игрока.
+         */
+        textEntity.setBillboardMode(
+                DisplayEntity.BillboardMode.CENTER
+        );
+
+        /*
+         * Размер текста.
+         */
+        textEntity.setTransformationInterpolationDuration(3);
+
+        textEntity.setStartInterpolation(0);
+
+        textEntityId =
+                250000 +
+                        RANDOM.nextInt(50000);
+
+        world.addEntity(textEntity);
+    }
+
+    private static String buildText() {
+
+        StringBuilder text =
+                new StringBuilder();
+
+        if (!line1.isEmpty()) {
+            text.append(line1);
+        }
+
+        if (!line2.isEmpty()) {
+
+            if (text.length() > 0) {
+                text.append("\n");
+            }
+
+            text.append(line2);
+        }
+
+        if (!line3.isEmpty()) {
+
+            if (text.length() > 0) {
+                text.append("\n");
+            }
+
+            text.append(line3);
+        }
+
+        return text.toString();
     }
 
     public static void tick(MinecraftClient client) {
@@ -390,11 +458,20 @@ public final class SignIllusionEvent {
         }
 
         /*
-         * Если игрок слишком далеко —
-         * иллюзия исчезает.
+         * Проверяем деревянную часть.
          */
         if (signEntity != null &&
                 signEntity.isRemoved()) {
+
+            stop();
+            return;
+        }
+
+        /*
+         * Проверяем текст.
+         */
+        if (textEntity != null &&
+                textEntity.isRemoved()) {
 
             stop();
             return;
@@ -406,12 +483,10 @@ public final class SignIllusionEvent {
     }
 
     /*
-     * Пока оставляем этот метод пустым,
-     * чтобы старый HorrorManager продолжал
-     * нормально вызывать renderOverlay().
+     * Табличка теперь полностью находится
+     * в игровом мире.
      *
-     * Сама табличка теперь находится В МИРЕ,
-     * поэтому здесь ничего рисовать не нужно.
+     * HUD здесь больше ничего не рисует.
      */
     public static void renderOverlay(
             DrawContext context,
@@ -430,12 +505,22 @@ public final class SignIllusionEvent {
             signEntity = null;
         }
 
+        if (textEntity != null) {
+
+            textEntity.remove(
+                    Entity.RemovalReason.DISCARDED
+            );
+
+            textEntity = null;
+        }
+
         active = false;
 
         ticks = 0;
         maxTicks = 0;
 
         entityId = -1;
+        textEntityId = -1;
 
         fade = 0.0f;
 
