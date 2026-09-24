@@ -18,13 +18,20 @@
     "sounds": [
       { "name": "whispershadow:vhs", "stream": false }
     ]
-  }
-,
+  },
   "footsteps": {
     "subtitle": "subtitles.whispershadow.footsteps",
     "sounds": [
       { "name": "minecraft:block.grass.step", "stream": false, "volume": 0.85, "pitch": 0.65 },
       { "name": "minecraft:block.stone.step", "stream": false, "volume": 0.55, "pitch": 0.75 }
+    ]
+  },
+  "circuit_chase": {
+    "sounds": [
+      {
+        "name": "whispershadow:circuit_chase",
+        "stream": true
+      }
     ]
   }
 }
