@@ -1105,6 +1105,9 @@ public final class HorrorManager {
     }
 
     // SPAWN SHADOW
+    public static void spawnFigure(MinecraftClient client) {
+    spawnFigure(client, 0);
+}
     private static void spawnFigure(
             MinecraftClient client,
             int level
