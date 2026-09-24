@@ -325,9 +325,9 @@ public final class HorrorManager {
         if (client.player == null || tabMessageCooldown > 0) return;
         List<String> names = new ArrayList<>();
         for (PlayerListEntry entry : client.player.networkHandler.getPlayerList()) {
-            if (entry.getProfile() != null && entry.getProfile().getName() != null) names.add(entry.getProfile().getName());
+            if (entry.getProfile() != null && entry.getProfile().name() != null) names.add(entry.getProfile().name());
         }
-        if (names.isEmpty()) names.add(client.player.getGameProfile().getName());
+       if (names.isEmpty()) names.add(client.player.getGameProfile().name());
         String name = names.get(RANDOM.nextInt(names.size()));
         String[] patterns = {
                 name + " was not found", name + " can't hide", name + " is behind you",
