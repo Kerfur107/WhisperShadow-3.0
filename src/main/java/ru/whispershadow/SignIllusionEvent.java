@@ -346,10 +346,7 @@ public final class SignIllusionEvent {
                 200000 +
                         RANDOM.nextInt(50000);
 
-        world.addEntity(
-                entityId,
-                signEntity
-        );
+        world.addEntity(signEntity);
     }
 
     public static void tick(MinecraftClient client) {
