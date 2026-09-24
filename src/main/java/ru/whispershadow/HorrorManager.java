@@ -4,9 +4,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -23,34 +21,101 @@ import java.util.List;
 import java.util.Map;
 
 public final class HorrorManager {
-    private static final Random RANDOM = new Random();
+
+    private static final Random RANDOM =
+            new Random();
 
     private static final String[] MESSAGES = {
-            "I can see you.", "You are nothing.", "Don't turn around.",
-            "I'm still here.", "Why did you look at me?", "You shouldn't be here.",
-            "I know where you are.", "...", "Something is watching.",
-            "It was closer a moment ago.", "Did you hear that?", "Don't look behind you.",
-            "You missed something.", "I was here first.", "Can you hear me?", "Stop walking.",
-            "Turn around.", "You are not alone.", "Keep your eyes open.", "I saw that.",
-            "That wasn't there before.", "Look up.", "Look down.", "Don't answer.",
-            "Why are you still here?", "I remember you.", "You forgot something.",
-            "It's getting closer.", "I can hear you.", "You shouldn't have opened that.",
-            "Something moved.", "Don't stay here.", "It knows.", "Not yet.", "Almost.",
-            "Again.", "Did you see me?", "You looked right at me.", "I'm behind you.",
-            "No, not there.", "Wrong way.", "You are being watched.", "You won't notice me.",
-            "I don't like the light.", "Where are you going?", "Stay still.", "I found you.",
-            "Hello?", "....", "I heard you breathe.", "Don't close the door.",
-            "The dark is listening.", "You left something behind.", "That sound was mine.",
-            "I was waiting.", "Not alone.", "Too late.", "Keep moving.", "No one is coming.",
-            "I know what you saw.", "You shouldn't remember me.", "Look at the corner.",
-            "Don't trust the silence.", "It is quieter when you are afraid.", "I am closer now.",
-            "You almost found me.", "I don't need eyes.", "I know your footsteps.",
-            "Stop looking for me.", "I can wait.", "You can't.", "The room changed.",
-            "Was that your shadow?", "Don't blink.", "Something is standing there.",
-            "You heard that.", "I know you did.", "Stay where the light reaches.",
-            "The light won't save you.", "You are making noise.", "Quiet.", "Listen.",
-            "Behind the wall.", "Under the floor.", "Above you.", "Not where you think.",
-            "I was never far away.", "You invited me.", "You noticed.", "Now I notice you."
+            "I can see you.",
+            "You are nothing.",
+            "Don't turn around.",
+            "I'm still here.",
+            "Why did you look at me?",
+            "You shouldn't be here.",
+            "I know where you are.",
+            "...",
+            "Something is watching.",
+            "It was closer a moment ago.",
+            "Did you hear that?",
+            "Don't look behind you.",
+            "You missed something.",
+            "I was here first.",
+            "Can you hear me?",
+            "Stop walking.",
+            "Turn around.",
+            "You are not alone.",
+            "Keep your eyes open.",
+            "I saw that.",
+            "That wasn't there before.",
+            "Look up.",
+            "Look down.",
+            "Don't answer.",
+            "Why are you still here?",
+            "I remember you.",
+            "You forgot something.",
+            "It's getting closer.",
+            "I can hear you.",
+            "You shouldn't have opened that.",
+            "Something moved.",
+            "Don't stay here.",
+            "It knows.",
+            "Not yet.",
+            "Almost.",
+            "Again.",
+            "Did you see me?",
+            "You looked right at me.",
+            "I'm behind you.",
+            "No, not there.",
+            "Wrong way.",
+            "You are being watched.",
+            "You won't notice me.",
+            "I don't like the light.",
+            "Where are you going?",
+            "Stay still.",
+            "I found you.",
+            "Hello?",
+            "....",
+            "I heard you breathe.",
+            "Don't close the door.",
+            "The dark is listening.",
+            "You left something behind.",
+            "That sound was mine.",
+            "I was waiting.",
+            "Not alone.",
+            "Too late.",
+            "Keep moving.",
+            "No one is coming.",
+            "I know what you saw.",
+            "You shouldn't remember me.",
+            "Look at the corner.",
+            "Don't trust the silence.",
+            "It is quieter when you are afraid.",
+            "I am closer now.",
+            "You almost found me.",
+            "I don't need eyes.",
+            "I know your footsteps.",
+            "Stop looking for me.",
+            "I can wait.",
+            "You can't.",
+            "The room changed.",
+            "Was that your shadow?",
+            "Don't blink.",
+            "Something is standing there.",
+            "You heard that.",
+            "I know you did.",
+            "Stay where the light reaches.",
+            "The light won't save you.",
+            "You are making noise.",
+            "Quiet.",
+            "Listen.",
+            "Behind the wall.",
+            "Under the floor.",
+            "Above you.",
+            "Not where you think.",
+            "I was never far away.",
+            "You invited me.",
+            "You noticed.",
+            "Now I notice you."
     };
 
     private static final String[] GENERIC_REPLIES = {
@@ -96,23 +161,32 @@ public final class HorrorManager {
     private static int glitchTicks = 0;
     private static int glitchStyle = 0;
     private static int vhsTicks = 0;
+
     private static int figureTicks = 0;
+
     private static int replyDelay = 0;
     private static String pendingReply = null;
+
     private static ShadowEntity figure = null;
+
     private static int doppelgangerTicks = 0;
     private static ShadowEntity doppelganger = null;
+
     private static int eyesTicks = 0;
     private static int peripheralTicks = 0;
     private static int distortionTicks = 0;
+
     private static int torchTicks = 0;
-    private static final Map<BlockPos, BlockState> hiddenTorches = new HashMap<>();
+
+    private static final Map<BlockPos, BlockState> hiddenTorches =
+            new HashMap<>();
+
     private static String tabIllusion = null;
     private static int tabIllusionTicks = 0;
     private static int tabMessageCooldown = 0;
 
     // =========================================================
-    // "SHOW YOURSELF" EVENT
+    // SHOW YOURSELF
     // =========================================================
 
     private static int showYourselfCooldown = 0;
@@ -142,6 +216,31 @@ public final class HorrorManager {
             "Keep looking."
     };
 
+    // =========================================================
+    // RUN / CHASE
+    // =========================================================
+
+    private static boolean runActive = false;
+
+    private static int runTicks = 0;
+
+    /*
+     * 20 seconds.
+     */
+    private static final int RUN_DURATION_TICKS =
+            20 * 20;
+
+    /*
+     * Restart the chase track periodically.
+     *
+     * This assumes the supplied Circuit track is around
+     * 20 seconds long.
+     */
+    private static final int CHASE_SOUND_TICKS =
+            20 * 20;
+
+    private static int chaseSoundTicks = 0;
+
     private HorrorManager() {}
 
     public static void init() {}
@@ -150,41 +249,47 @@ public final class HorrorManager {
     // PLAYER CHAT
     // =========================================================
 
-    public static void handlePlayerChat(String message) {
-        MinecraftClient client = MinecraftClient.getInstance();
+    public static void handlePlayerChat(
+            String message
+    ) {
 
-        if (client.player == null || message == null || message.isBlank()) return;
+        MinecraftClient client =
+                MinecraftClient.getInstance();
 
-        String cleanMessage = message.trim().toLowerCase(Locale.ROOT);
+        if (client.player == null ||
+                message == null ||
+                message.isBlank())
+            return;
+
+        String cleanMessage =
+                message.trim()
+                        .toLowerCase(Locale.ROOT);
 
         // =====================================================
         // SHOW YOURSELF
-        // 15% = Shadow appears
-        // 85% = Shadow refuses
         // =====================================================
 
         if (cleanMessage.equals("show yourself")) {
 
-            // Prevent chat spam.
-            if (showYourselfCooldown > 0) {
+            if (showYourselfCooldown > 0)
                 return;
-            }
 
-            // 30-second cooldown.
-            showYourselfCooldown = 20 * 30;
+            showYourselfCooldown =
+                    20 * 30;
 
-            // 15% chance.
-            boolean shadowAppears = RANDOM.nextInt(100) < 15;
+            boolean shadowAppears =
+                    RANDOM.nextInt(100) < 15;
 
             if (shadowAppears) {
 
-                // Small delay before Shadow appears.
                 showYourselfPending = true;
-                showYourselfDelay = 40; // 2 seconds
+                showYourselfDelay = 40;
 
                 client.player.sendMessage(
                         Text.literal("...")
-                                .formatted(Formatting.DARK_GRAY),
+                                .formatted(
+                                        Formatting.DARK_GRAY
+                                ),
                         false
                 );
 
@@ -192,24 +297,25 @@ public final class HorrorManager {
 
             } else {
 
-                // 85% chance: Shadow refuses.
                 String refusal =
                         SHOW_YOURSELF_REFUSALS[
-                                RANDOM.nextInt(SHOW_YOURSELF_REFUSALS.length)
+                                RANDOM.nextInt(
+                                        SHOW_YOURSELF_REFUSALS.length
+                                )
                         ];
 
                 pendingReply = refusal;
 
-                // 1.25 - 3.5 seconds.
-                replyDelay = 25 + RANDOM.nextInt(45);
+                replyDelay =
+                        25 +
+                        RANDOM.nextInt(45);
 
                 InsanityManager.add(
-                        0.3f + RANDOM.nextFloat() * 1.2f
+                        0.3f +
+                        RANDOM.nextFloat() * 1.2f
                 );
             }
 
-            // Don't let the normal chat system answer
-            // "Show yourself" as well.
             return;
         }
 
@@ -217,17 +323,33 @@ public final class HorrorManager {
         // NORMAL CHAT SYSTEM
         // =====================================================
 
-        int level = InsanityManager.getLevelNumber();
-        int chance = level >= 4 ? 48 : level >= 2 ? 36 : 24;
+        int level =
+                InsanityManager.getLevelNumber();
 
-        if (RANDOM.nextInt(100) >= chance) return;
-        if (replyDelay > 0 || pendingReply != null) return;
+        int chance =
+                level >= 4
+                        ? 48
+                        : level >= 2
+                        ? 36
+                        : 24;
 
-        pendingReply = chooseReply(message);
-        replyDelay = 25 + RANDOM.nextInt(150);
+        if (RANDOM.nextInt(100) >= chance)
+            return;
+
+        if (replyDelay > 0 ||
+                pendingReply != null)
+            return;
+
+        pendingReply =
+                chooseReply(message);
+
+        replyDelay =
+                25 +
+                RANDOM.nextInt(150);
 
         InsanityManager.add(
-                0.7f + RANDOM.nextFloat() * 2.0f
+                0.7f +
+                RANDOM.nextFloat() * 2.0f
         );
     }
 
@@ -235,11 +357,21 @@ public final class HorrorManager {
     // NORMAL REPLIES
     // =========================================================
 
-    private static String chooseReply(String input) {
-        String clean = input.trim();
-        String lower = clean.toLowerCase(Locale.ROOT);
+    private static String chooseReply(
+            String input
+    ) {
+
+        String clean =
+                input.trim();
+
+        String lower =
+                clean.toLowerCase(Locale.ROOT);
+
         String normalized =
-                lower.replaceAll("[^a-z0-9? ]", "").trim();
+                lower.replaceAll(
+                        "[^a-z0-9? ]",
+                        ""
+                ).trim();
 
         if (lower.contains("where are you") ||
                 lower.contains("where r u"))
@@ -291,11 +423,15 @@ public final class HorrorManager {
 
         if (normalized.endsWith("?"))
             return GENERIC_REPLIES[
-                    RANDOM.nextInt(GENERIC_REPLIES.length)
+                    RANDOM.nextInt(
+                            GENERIC_REPLIES.length
+                    )
             ];
 
         return GENERIC_REPLIES[
-                RANDOM.nextInt(GENERIC_REPLIES.length)
+                RANDOM.nextInt(
+                        GENERIC_REPLIES.length
+                )
         ];
     }
 
@@ -303,15 +439,25 @@ public final class HorrorManager {
     // TICK
     // =========================================================
 
-    public static void tick(MinecraftClient client) {
+    public static void tick(
+            MinecraftClient client
+    ) {
+
         InsanityManager.tick(client);
         EventDirector.tick(client);
 
-        if (client.player == null || client.world == null) {
+        if (client.player == null ||
+                client.world == null) {
+
+            stopChase(client);
+
             removeFigure(client);
+
             replyDelay = 0;
             pendingReply = null;
+
             vhsTicks = 0;
+
             removeDoppelganger(client);
             restoreTorches(client);
 
@@ -332,9 +478,8 @@ public final class HorrorManager {
         // SHOW YOURSELF COOLDOWN
         // =====================================================
 
-        if (showYourselfCooldown > 0) {
+        if (showYourselfCooldown > 0)
             showYourselfCooldown--;
-        }
 
         // =====================================================
         // SHOW YOURSELF DELAY
@@ -342,9 +487,8 @@ public final class HorrorManager {
 
         if (showYourselfPending) {
 
-            if (showYourselfDelay > 0) {
+            if (showYourselfDelay > 0)
                 showYourselfDelay--;
-            }
 
             if (showYourselfDelay == 0) {
 
@@ -353,29 +497,29 @@ public final class HorrorManager {
                 if (client.player != null &&
                         client.world != null) {
 
-                    // Spawn Shadow.
                     fireDirectorFigure(client);
 
-                    // Whisper when Shadow appears.
                     client.player.playSound(
                             ModSounds.WHISPER,
-                            0.35f + RANDOM.nextFloat() * 0.25f,
-                            0.55f + RANDOM.nextFloat() * 0.25f
+                            0.35f +
+                                    RANDOM.nextFloat() * 0.25f,
+                            0.55f +
+                                    RANDOM.nextFloat() * 0.25f
                     );
 
-                    // Increase insanity.
                     InsanityManager.add(
-                            5.0f + RANDOM.nextFloat() * 3.0f
+                            5.0f +
+                                    RANDOM.nextFloat() * 3.0f
                     );
 
-                    // Short glitch effect.
                     fireDirectorGlitch();
 
-                    // Final message.
                     client.player.sendMessage(
                             Text.literal(
                                     "You asked me to show myself."
-                            ).formatted(Formatting.DARK_RED),
+                            ).formatted(
+                                    Formatting.DARK_RED
+                            ),
                             false
                     );
                 }
@@ -392,7 +536,11 @@ public final class HorrorManager {
         if (replyDelay == 0 &&
                 pendingReply != null) {
 
-            deliverReply(client, pendingReply);
+            deliverReply(
+                    client,
+                    pendingReply
+            );
+
             pendingReply = null;
         }
 
@@ -400,12 +548,23 @@ public final class HorrorManager {
         // EFFECT TIMERS
         // =====================================================
 
-        if (glitchTicks > 0) glitchTicks--;
-        if (vhsTicks > 0) vhsTicks--;
-        if (eyesTicks > 0) eyesTicks--;
-        if (peripheralTicks > 0) peripheralTicks--;
-        if (distortionTicks > 0) distortionTicks--;
-        if (tabIllusionTicks > 0) tabIllusionTicks--;
+        if (glitchTicks > 0)
+            glitchTicks--;
+
+        if (vhsTicks > 0)
+            vhsTicks--;
+
+        if (eyesTicks > 0)
+            eyesTicks--;
+
+        if (peripheralTicks > 0)
+            peripheralTicks--;
+
+        if (distortionTicks > 0)
+            distortionTicks--;
+
+        if (tabIllusionTicks > 0)
+            tabIllusionTicks--;
 
         if (tabMessageCooldown > 0)
             tabMessageCooldown--;
@@ -418,7 +577,10 @@ public final class HorrorManager {
                 doppelganger != null) {
 
             doppelgangerTicks--;
-            doppelganger.horrorTick(client.player);
+
+            doppelganger.horrorTick(
+                    client.player
+            );
 
         } else if (doppelganger != null) {
 
@@ -438,39 +600,314 @@ public final class HorrorManager {
         }
 
         // =====================================================
-        // MAIN FIGURE
+        // RUN / CHASE
         // =====================================================
 
-        if (figureTicks > 0) {
+        if (runActive) {
 
-            figureTicks--;
+            runTicks--;
+
+            if (chaseSoundTicks > 0)
+                chaseSoundTicks--;
+
+            /*
+             * Restart the chase track if its timer expires.
+             */
+            if (chaseSoundTicks <= 0) {
+
+                playChaseSound(client);
+            }
 
             if (figure != null) {
 
-                figure.horrorTick(client.player);
+                figure.chasePlayer(
+                        client.player
+                );
 
-                if (HorrorConfig.ENABLE_TOUCH_DISCONNECT &&
-                        figure.getBoundingBox()
-                                .expand(0.30)
-                                .intersects(
-                                        client.player.getBoundingBox()
-                                )) {
+                /*
+                 * The Shadow caught the player.
+                 */
+                if (figure.getBoundingBox()
+                        .expand(0.30)
+                        .intersects(
+                                client.player.getBoundingBox()
+                        )) {
 
-                    InsanityManager.add(20);
+                    InsanityManager.add(20.0f);
 
-                    client.world.disconnect(
-                            Text.literal("You were touched.")
+                    /*
+                     * 5% rare finale.
+                     *
+                     * This is a client-side disconnect,
+                     * not a real server kick.
+                     */
+                    if (RANDOM.nextInt(100) < 5) {
+
+                        stopChase(client);
+                        removeFigure(client);
+
+                        client.world.disconnect(
+                                Text.literal(
+                                        "You were caught."
+                                )
+                        );
+
+                        return;
+                    }
+
+                    /*
+                     * Normal catch.
+                     */
+                    client.player.sendMessage(
+                            Text.literal(
+                                    "..."
+                            ).formatted(
+                                    Formatting.DARK_RED
+                            ),
+                            false
                     );
+
+                    fireDirectorGlitch();
+
+                    stopChase(client);
+                    removeFigure(client);
 
                     return;
                 }
-
             }
 
-        } else if (figure != null) {
+            /*
+             * Chase timer ended.
+             */
+            if (runTicks <= 0) {
 
-            removeFigure(client);
+                stopChase(client);
+
+                removeFigure(client);
+
+                client.player.sendMessage(
+                        Text.literal(
+                                "..."
+                        ).formatted(
+                                Formatting.DARK_GRAY
+                        ),
+                        false
+                );
+            }
         }
+
+        // =====================================================
+        // MAIN FIGURE
+        // =====================================================
+
+        /*
+         * Normal figure logic must not run while
+         * RUN is active.
+         */
+        if (!runActive) {
+
+            if (figureTicks > 0) {
+
+                figureTicks--;
+
+                if (figure != null) {
+
+                    figure.horrorTick(
+                            client.player
+                    );
+
+                    if (HorrorConfig.ENABLE_TOUCH_DISCONNECT &&
+                            figure.getBoundingBox()
+                                    .expand(0.30)
+                                    .intersects(
+                                            client.player
+                                                    .getBoundingBox()
+                                    )) {
+
+                        InsanityManager.add(20);
+
+                        client.world.disconnect(
+                                Text.literal(
+                                        "You were touched."
+                                )
+                        );
+
+                        return;
+                    }
+                }
+
+            } else if (figure != null) {
+
+                removeFigure(client);
+            }
+        }
+    }
+
+    // =========================================================
+    // RUN EVENT
+    // =========================================================
+
+    public static void fireRun(
+            MinecraftClient client
+    ) {
+
+        if (client.player == null ||
+                client.world == null)
+            return;
+
+        /*
+         * Do not start another RUN over an existing one.
+         */
+        if (runActive)
+            return;
+
+        runActive = true;
+
+        runTicks =
+                RUN_DURATION_TICKS;
+
+        chaseSoundTicks = 0;
+
+        /*
+         * Remove an ordinary Shadow first.
+         */
+        removeFigure(client);
+
+        /*
+         * Start the chase Shadow.
+         */
+        spawnChaseFigure(client);
+
+        client.player.sendMessage(
+                Text.literal("RUN.")
+                        .formatted(
+                                Formatting.DARK_RED,
+                                Formatting.BOLD
+                        ),
+                false
+        );
+
+        /*
+         * Strong glitch at the beginning.
+         */
+        fireDirectorGlitch();
+
+        /*
+         * Start Circuit.
+         */
+        playChaseSound(client);
+
+        InsanityManager.add(
+                8.0f +
+                        RANDOM.nextFloat() * 5.0f
+        );
+    }
+
+    private static void spawnChaseFigure(
+            MinecraftClient client
+    ) {
+
+        if (client.player == null ||
+                client.world == null)
+            return;
+
+        /*
+         * Spawn behind the player.
+         */
+        double yaw =
+                Math.toRadians(
+                        client.player.getYaw()
+                                + 180.0
+                );
+
+        double distance =
+                8.0 +
+                        RANDOM.nextDouble() * 3.0;
+
+        double x =
+                client.player.getX()
+                        + Math.sin(yaw)
+                        * distance;
+
+        double z =
+                client.player.getZ()
+                        - Math.cos(yaw)
+                        * distance;
+
+        ShadowEntity entity =
+                new ShadowEntity(
+                        client.world,
+                        client.player.getGameProfile(),
+                        false
+                );
+
+        entity.setId(
+                -800000 -
+                        RANDOM.nextInt(100000)
+        );
+
+        entity.refreshPositionAndAngles(
+                x,
+                client.player.getY(),
+                z,
+                client.player.getYaw(),
+                0.0f
+        );
+
+        entity.setNoGravity(true);
+        entity.setInvisible(false);
+
+        client.world.addEntity(entity);
+
+        figure = entity;
+
+        /*
+         * RUN controls its lifetime.
+         */
+        figureTicks =
+                RUN_DURATION_TICKS;
+    }
+
+    private static void playChaseSound(
+            MinecraftClient client
+    ) {
+
+        if (client.player == null)
+            return;
+
+        /*
+         * Prevent two copies from overlapping.
+         */
+        client.getSoundManager().stopSounds(
+                ModSounds.CIRCUIT_CHASE_ID,
+                null
+        );
+
+        client.player.playSound(
+                ModSounds.CIRCUIT_CHASE,
+                0.30f,
+                1.0f
+        );
+
+        chaseSoundTicks =
+                CHASE_SOUND_TICKS;
+    }
+
+    private static void stopChase(
+            MinecraftClient client
+    ) {
+
+        runActive = false;
+        runTicks = 0;
+        chaseSoundTicks = 0;
+
+        /*
+         * Immediately stop Circuit.
+         */
+        client.getSoundManager().stopSounds(
+                ModSounds.CIRCUIT_CHASE_ID,
+                null
+        );
     }
 
     // =========================================================
@@ -481,9 +918,12 @@ public final class HorrorManager {
             MinecraftClient client,
             String reply
     ) {
-        if (client.player == null) return;
 
-        boolean rare = RANDOM.nextInt(100) < 10;
+        if (client.player == null)
+            return;
+
+        boolean rare =
+                RANDOM.nextInt(100) < 10;
 
         if (rare) {
 
@@ -494,10 +934,11 @@ public final class HorrorManager {
                             )
                     ];
 
-            reply = template.replace(
-                    "{input}",
-                    reply
-            );
+            reply =
+                    template.replace(
+                            "{input}",
+                            reply
+                    );
 
             client.player.sendMessage(
                     glitchText(reply),
@@ -508,8 +949,10 @@ public final class HorrorManager {
 
             client.player.playSound(
                     ModSounds.GLITCH,
-                    0.18f + RANDOM.nextFloat() * 0.18f,
-                    0.75f + RANDOM.nextFloat() * 0.45f
+                    0.18f +
+                            RANDOM.nextFloat() * 0.18f,
+                    0.75f +
+                            RANDOM.nextFloat() * 0.45f
             );
 
         } else {
@@ -523,8 +966,10 @@ public final class HorrorManager {
 
                 client.player.playSound(
                         ModSounds.WHISPER,
-                        0.10f + RANDOM.nextFloat() * 0.20f,
-                        0.72f + RANDOM.nextFloat() * 0.45f
+                        0.10f +
+                                RANDOM.nextFloat() * 0.20f,
+                        0.72f +
+                                RANDOM.nextFloat() * 0.45f
                 );
             }
         }
@@ -537,7 +982,9 @@ public final class HorrorManager {
     public static void fireDirectorMessage(
             MinecraftClient client
     ) {
-        if (client.player == null) return;
+
+        if (client.player == null)
+            return;
 
         client.player.sendMessage(
                 coloredEntityText(
@@ -551,51 +998,63 @@ public final class HorrorManager {
         );
 
         InsanityManager.add(
-                1.0f + RANDOM.nextFloat() * 2.5f
+                1.0f +
+                        RANDOM.nextFloat() * 2.5f
         );
     }
 
     public static void fireDirectorGlitch() {
+
         int level =
                 InsanityManager.getLevelNumber();
 
         glitchTicks =
-                2 + RANDOM.nextInt(
-                        5 + level * 3
-                );
+                2 +
+                        RANDOM.nextInt(
+                                5 + level * 3
+                        );
 
-        glitchStyle = RANDOM.nextInt(6);
+        glitchStyle =
+                RANDOM.nextInt(6);
 
         InsanityManager.add(
-                0.8f + RANDOM.nextFloat() * 1.8f
+                0.8f +
+                        RANDOM.nextFloat() * 1.8f
         );
     }
 
     public static void fireDirectorWhisper(
             MinecraftClient client
     ) {
-        if (client.player == null) return;
+
+        if (client.player == null)
+            return;
 
         client.player.playSound(
                 ModSounds.WHISPER,
-                0.20f + RANDOM.nextFloat() * 0.45f,
-                0.70f + RANDOM.nextFloat() * 0.55f
+                0.20f +
+                        RANDOM.nextFloat() * 0.45f,
+                0.70f +
+                        RANDOM.nextFloat() * 0.55f
         );
 
         if (RANDOM.nextInt(100) < 18)
             fireDirectorGlitch();
 
         InsanityManager.add(
-                1.0f + RANDOM.nextFloat() * 3.0f
+                1.0f +
+                        RANDOM.nextFloat() * 3.0f
         );
     }
 
     public static void fireDirectorFigure(
             MinecraftClient client
     ) {
+
         if (figure == null &&
                 client.player != null &&
-                client.world != null) {
+                client.world != null &&
+                !runActive) {
 
             spawnFigure(
                     client,
@@ -607,6 +1066,7 @@ public final class HorrorManager {
     public static void fireDecoy(
             MinecraftClient client
     ) {
+
         fireDirectorGlitch();
 
         if (client.player != null) {
@@ -614,18 +1074,20 @@ public final class HorrorManager {
             client.player.playSound(
                     ModSounds.STATIC,
                     0.12f,
-                    0.6f + RANDOM.nextFloat() * 0.7f
+                    0.6f +
+                            RANDOM.nextFloat() * 0.7f
             );
         }
     }
 
     public static void fireDirectorVhs() {
 
-        if (vhsTicks > 0) return;
+        if (vhsTicks > 0)
+            return;
 
-        // Rare event: between 8 and 55 seconds.
         vhsTicks =
-                160 + RANDOM.nextInt(950);
+                160 +
+                        RANDOM.nextInt(950);
 
         MinecraftClient client =
                 MinecraftClient.getInstance();
@@ -634,13 +1096,16 @@ public final class HorrorManager {
 
             client.player.playSound(
                     ModSounds.VHS,
-                    0.10f + RANDOM.nextFloat() * 0.12f,
-                    0.82f + RANDOM.nextFloat() * 0.18f
+                    0.10f +
+                            RANDOM.nextFloat() * 0.12f,
+                    0.82f +
+                            RANDOM.nextFloat() * 0.18f
             );
         }
 
         InsanityManager.add(
-                2.0f + RANDOM.nextFloat() * 3.5f
+                2.0f +
+                        RANDOM.nextFloat() * 3.5f
         );
     }
 
@@ -652,6 +1117,7 @@ public final class HorrorManager {
             MinecraftClient client,
             int level
     ) {
+
         double angle;
         double distance;
 
@@ -660,11 +1126,13 @@ public final class HorrorManager {
 
             angle =
                     Math.toRadians(
-                            client.player.getYaw() + 180.0
+                            client.player.getYaw()
+                                    + 180.0
                     );
 
             distance =
-                    5.0 + RANDOM.nextDouble() * 5.0;
+                    5.0 +
+                            RANDOM.nextDouble() * 5.0;
 
         } else {
 
@@ -674,11 +1142,11 @@ public final class HorrorManager {
 
             distance =
                     HorrorConfig.FIGURE_MIN_DISTANCE +
-                    RANDOM.nextDouble() *
-                    (
-                            HorrorConfig.FIGURE_MAX_DISTANCE -
-                            HorrorConfig.FIGURE_MIN_DISTANCE
-                    );
+                            RANDOM.nextDouble() *
+                                    (
+                                            HorrorConfig.FIGURE_MAX_DISTANCE -
+                                                    HorrorConfig.FIGURE_MIN_DISTANCE
+                                    );
         }
 
         double x =
@@ -716,17 +1184,20 @@ public final class HorrorManager {
                         level * 20;
 
         InsanityManager.add(
-                4.0f + level * 1.5f
+                4.0f +
+                        level * 1.5f
         );
     }
 
     private static void removeFigure(
             MinecraftClient client
     ) {
+
         if (figure != null) {
 
             figure.remove(
-                    net.minecraft.entity.Entity.RemovalReason.DISCARDED
+                    net.minecraft.entity.Entity.RemovalReason
+                            .DISCARDED
             );
 
             figure = null;
@@ -742,7 +1213,9 @@ public final class HorrorManager {
     private static MutableText coloredEntityText(
             String message
     ) {
-        int roll = RANDOM.nextInt(100);
+
+        int roll =
+                RANDOM.nextInt(100);
 
         Formatting color =
                 roll < 58
@@ -754,12 +1227,15 @@ public final class HorrorManager {
                         : Formatting.BLACK;
 
         MutableText text =
-                Text.literal(message).formatted(color);
+                Text.literal(message)
+                        .formatted(color);
 
         if (roll >= 72 &&
                 RANDOM.nextBoolean()) {
 
-            text.formatted(Formatting.BOLD);
+            text.formatted(
+                    Formatting.BOLD
+            );
         }
 
         return text;
@@ -768,7 +1244,9 @@ public final class HorrorManager {
     private static MutableText glitchText(
             String message
     ) {
-        MutableText out = Text.empty();
+
+        MutableText out =
+                Text.empty();
 
         Formatting[] colors = {
                 Formatting.DARK_RED,
@@ -778,9 +1256,12 @@ public final class HorrorManager {
                 Formatting.GRAY
         };
 
-        for (int i = 0; i < message.length(); i++) {
+        for (int i = 0;
+             i < message.length();
+             i++) {
 
-            char c = message.charAt(i);
+            char c =
+                    message.charAt(i);
 
             MutableText part =
                     Text.literal(
@@ -793,15 +1274,19 @@ public final class HorrorManager {
                             ]
                     );
 
-            if (RANDOM.nextInt(100) < 28)
+            if (RANDOM.nextInt(100) < 28) {
+
                 part.formatted(
                         Formatting.OBFUSCATED
                 );
+            }
 
-            if (RANDOM.nextInt(100) < 18)
+            if (RANDOM.nextInt(100) < 18) {
+
                 part.formatted(
                         Formatting.BOLD
                 );
+            }
 
             out.append(part);
         }
@@ -816,6 +1301,7 @@ public final class HorrorManager {
     public static void fireTabIllusion(
             MinecraftClient client
     ) {
+
         if (client.player == null ||
                 tabMessageCooldown > 0)
             return;
@@ -836,12 +1322,14 @@ public final class HorrorManager {
             }
         }
 
-        if (names.isEmpty())
+        if (names.isEmpty()) {
+
             names.add(
                     client.player
                             .getGameProfile()
                             .name()
             );
+        }
 
         String name =
                 names.get(
@@ -870,10 +1358,12 @@ public final class HorrorManager {
                 ];
 
         tabIllusionTicks =
-                55 + RANDOM.nextInt(100);
+                55 +
+                        RANDOM.nextInt(100);
 
         tabMessageCooldown =
-                500 + RANDOM.nextInt(1000);
+                500 +
+                        RANDOM.nextInt(1000);
 
         client.player.sendMessage(
                 glitchText(tabIllusion),
@@ -881,7 +1371,8 @@ public final class HorrorManager {
         );
 
         InsanityManager.add(
-                2.0f + RANDOM.nextFloat() * 3.0f
+                2.0f +
+                        RANDOM.nextFloat() * 3.0f
         );
     }
 
@@ -890,27 +1381,34 @@ public final class HorrorManager {
     // =========================================================
 
     public static void fireEyes() {
+
         eyesTicks =
-                12 + RANDOM.nextInt(35);
+                12 +
+                        RANDOM.nextInt(35);
 
         InsanityManager.add(
-                1.5f + RANDOM.nextFloat() * 2.5f
+                1.5f +
+                        RANDOM.nextFloat() * 2.5f
         );
     }
 
     public static void firePeripheral() {
+
         peripheralTicks =
-                5 + RANDOM.nextInt(18);
+                5 +
+                        RANDOM.nextInt(18);
 
         InsanityManager.add(
-                1.0f + RANDOM.nextFloat() * 2.0f
+                1.0f +
+                        RANDOM.nextFloat() * 2.0f
         );
     }
 
     public static void fireWorldDistortion() {
 
         distortionTicks =
-                10 + RANDOM.nextInt(55);
+                10 +
+                        RANDOM.nextInt(55);
 
         glitchStyle =
                 RANDOM.nextInt(8);
@@ -926,18 +1424,21 @@ public final class HorrorManager {
             client.player.playSound(
                     ModSounds.STATIC,
                     0.08f,
-                    0.55f + RANDOM.nextFloat() * 0.65f
+                    0.55f +
+                            RANDOM.nextFloat() * 0.65f
             );
         }
 
         InsanityManager.add(
-                1.2f + RANDOM.nextFloat() * 2.8f
+                1.2f +
+                        RANDOM.nextFloat() * 2.8f
         );
     }
 
     public static void fireFootsteps(
             MinecraftClient client
     ) {
+
         if (client.player == null ||
                 client.world == null)
             return;
@@ -948,24 +1449,27 @@ public final class HorrorManager {
         double angle =
                 Math.toRadians(
                         yaw +
-                        180.0 +
-                        (
-                                RANDOM.nextDouble() *
-                                28.0 - 14.0
-                        )
+                                180.0 +
+                                (
+                                        RANDOM.nextDouble()
+                                                * 28.0 -
+                                                14.0
+                                )
                 );
 
         double distance =
                 2.4 +
-                RANDOM.nextDouble() * 2.5;
+                        RANDOM.nextDouble() * 2.5;
 
         double x =
                 client.player.getX() +
-                        Math.sin(angle) * distance;
+                        Math.sin(angle) *
+                                distance;
 
         double z =
                 client.player.getZ() -
-                        Math.cos(angle) * distance;
+                        Math.cos(angle) *
+                                distance;
 
         client.world.playSoundClient(
                 x,
@@ -973,14 +1477,15 @@ public final class HorrorManager {
                 z,
                 ModSounds.FOOTSTEPS,
                 SoundCategory.AMBIENT,
-                0.65f + RANDOM.nextFloat() * 0.25f,
-                0.72f + RANDOM.nextFloat() * 0.2f,
+                0.65f +
+                        RANDOM.nextFloat() * 0.25f,
+                0.72f +
+                        RANDOM.nextFloat() * 0.2f,
                 true
         );
 
         if (RANDOM.nextInt(100) < 45) {
 
-            // A second step makes the direction more convincing.
             client.world.playSoundClient(
                     x + 0.35,
                     client.player.getY(),
@@ -988,13 +1493,15 @@ public final class HorrorManager {
                     ModSounds.FOOTSTEPS,
                     SoundCategory.AMBIENT,
                     0.5f,
-                    0.65f + RANDOM.nextFloat() * 0.2f,
+                    0.65f +
+                            RANDOM.nextFloat() * 0.2f,
                     true
             );
         }
 
         InsanityManager.add(
-                1.0f + RANDOM.nextFloat() * 2.5f
+                1.0f +
+                        RANDOM.nextFloat() * 2.5f
         );
     }
 
@@ -1005,6 +1512,7 @@ public final class HorrorManager {
     public static void fireTorchIllusion(
             MinecraftClient client
     ) {
+
         if (client.player == null ||
                 client.world == null ||
                 torchTicks > 0)
@@ -1017,11 +1525,17 @@ public final class HorrorManager {
 
         int radius = 20;
 
-        for (int x = -radius; x <= radius; x++) {
+        for (int x = -radius;
+             x <= radius;
+             x++) {
 
-            for (int y = -radius; y <= radius; y++) {
+            for (int y = -radius;
+                 y <= radius;
+                 y++) {
 
-                for (int z = -radius; z <= radius; z++) {
+                for (int z = -radius;
+                     z <= radius;
+                     z++) {
 
                     if (x * x +
                             y * y +
@@ -1030,10 +1544,15 @@ public final class HorrorManager {
                         continue;
 
                     BlockPos pos =
-                            origin.add(x, y, z);
+                            origin.add(
+                                    x,
+                                    y,
+                                    z
+                            );
 
                     BlockState state =
-                            client.world.getBlockState(pos);
+                            client.world
+                                    .getBlockState(pos);
 
                     if (isTorch(
                             state.getBlock()
@@ -1062,7 +1581,8 @@ public final class HorrorManager {
         }
 
         torchTicks =
-                80 + RANDOM.nextInt(180);
+                80 +
+                        RANDOM.nextInt(180);
 
         client.player.playSound(
                 ModSounds.STATIC,
@@ -1071,13 +1591,15 @@ public final class HorrorManager {
         );
 
         InsanityManager.add(
-                3.0f + RANDOM.nextFloat() * 4.0f
+                3.0f +
+                        RANDOM.nextFloat() * 4.0f
         );
     }
 
     private static boolean isTorch(
             Block block
     ) {
+
         return block == Blocks.TORCH ||
                 block == Blocks.WALL_TORCH ||
                 block == Blocks.SOUL_TORCH ||
@@ -1089,6 +1611,7 @@ public final class HorrorManager {
     private static void restoreTorches(
             MinecraftClient client
     ) {
+
         if (client.world == null ||
                 hiddenTorches.isEmpty())
             return;
@@ -1099,7 +1622,8 @@ public final class HorrorManager {
             if (client.world
                     .getBlockState(
                             entry.getKey()
-                    ).isAir()) {
+                    )
+                    .isAir()) {
 
                 client.world.setBlockState(
                         entry.getKey(),
@@ -1119,6 +1643,7 @@ public final class HorrorManager {
     public static void fireDoppelganger(
             MinecraftClient client
     ) {
+
         if (client.player == null ||
                 client.world == null ||
                 doppelganger != null ||
@@ -1128,24 +1653,27 @@ public final class HorrorManager {
         double angle =
                 Math.toRadians(
                         client.player.getYaw() +
-                        180.0 +
-                        (
-                                RANDOM.nextDouble() *
-                                35.0 - 17.5
-                        )
+                                180.0 +
+                                (
+                                        RANDOM.nextDouble()
+                                                * 35.0 -
+                                                17.5
+                                )
                 );
 
         double distance =
                 7.0 +
-                RANDOM.nextDouble() * 11.0;
+                        RANDOM.nextDouble() * 11.0;
 
         double x =
                 client.player.getX() +
-                        Math.sin(angle) * distance;
+                        Math.sin(angle) *
+                                distance;
 
         double z =
                 client.player.getZ() -
-                        Math.cos(angle) * distance;
+                        Math.cos(angle) *
+                                distance;
 
         doppelganger =
                 new ShadowEntity(
@@ -1174,20 +1702,24 @@ public final class HorrorManager {
         );
 
         doppelgangerTicks =
-                220 + RANDOM.nextInt(300);
+                220 +
+                        RANDOM.nextInt(300);
 
         InsanityManager.add(
-                6.0f + RANDOM.nextFloat() * 5.0f
+                6.0f +
+                        RANDOM.nextFloat() * 5.0f
         );
     }
 
     private static void removeDoppelganger(
             MinecraftClient client
     ) {
+
         if (doppelganger != null) {
 
             doppelganger.remove(
-                    net.minecraft.entity.Entity.RemovalReason.DISCARDED
+                    net.minecraft.entity.Entity.RemovalReason
+                            .DISCARDED
             );
         }
 
@@ -1203,6 +1735,7 @@ public final class HorrorManager {
             DrawContext context,
             RenderTickCounter tickCounter
     ) {
+
         if (glitchTicks <= 0 &&
                 vhsTicks <= 0 &&
                 eyesTicks <= 0 &&
@@ -1275,29 +1808,39 @@ public final class HorrorManager {
             int width,
             int height
     ) {
+
         int alpha =
-                12 + RANDOM.nextInt(32);
+                12 +
+                        RANDOM.nextInt(32);
 
         context.fill(
                 0,
                 0,
                 width,
                 height,
-                (alpha << 24) | 0x220000
+                (alpha << 24) |
+                        0x220000
         );
 
         int strips =
-                3 + RANDOM.nextInt(7);
+                3 +
+                        RANDOM.nextInt(7);
 
-        for (int i = 0; i < strips; i++) {
+        for (int i = 0;
+             i < strips;
+             i++) {
 
             int y =
                     RANDOM.nextInt(
-                            Math.max(1, height)
+                            Math.max(
+                                    1,
+                                    height
+                            )
                     );
 
             int h =
-                    1 + RANDOM.nextInt(5);
+                    1 +
+                            RANDOM.nextInt(5);
 
             int c =
                     RANDOM.nextBoolean()
@@ -1314,8 +1857,9 @@ public final class HorrorManager {
                     ),
                     (
                             18 +
-                            RANDOM.nextInt(45)
-                    << 24) | c
+                                    RANDOM.nextInt(45)
+                    << 24) |
+                            c
             );
         }
     }
@@ -1329,16 +1873,22 @@ public final class HorrorManager {
             int width,
             int height
     ) {
+
         int side =
                 RANDOM.nextInt(4);
 
         int x =
                 side == 0
-                        ? 12 + RANDOM.nextInt(
-                                Math.max(1, width / 5)
-                        )
+                        ? 12 +
+                                RANDOM.nextInt(
+                                        Math.max(
+                                                1,
+                                                width / 5
+                                        )
+                                )
                         : side == 1
-                        ? width - 35 -
+                        ? width -
+                                35 -
                                 RANDOM.nextInt(
                                         Math.max(
                                                 1,
@@ -1346,26 +1896,35 @@ public final class HorrorManager {
                                         )
                                 )
                         : RANDOM.nextInt(
-                                Math.max(1, width)
+                                Math.max(
+                                        1,
+                                        width
+                                )
                         );
 
         int y =
                 side < 2
-                        ? 45 + RANDOM.nextInt(
+                        ? 45 +
+                                RANDOM.nextInt(
+                                        Math.max(
+                                                1,
+                                                height - 90
+                                        )
+                                )
+                        : RANDOM.nextInt(
                                 Math.max(
                                         1,
-                                        height - 90
+                                        height
                                 )
-                        )
-                        : RANDOM.nextInt(
-                                Math.max(1, height)
                         );
 
         int gap =
-                7 + RANDOM.nextInt(8);
+                7 +
+                        RANDOM.nextInt(8);
 
         int size =
-                2 + RANDOM.nextInt(3);
+                2 +
+                        RANDOM.nextInt(3);
 
         int color =
                 RANDOM.nextInt(100) < 75
@@ -1377,7 +1936,8 @@ public final class HorrorManager {
                 y,
                 x + size,
                 y + size,
-                0xD0000000 | color
+                0xD0000000 |
+                        color
         );
 
         context.fill(
@@ -1385,7 +1945,8 @@ public final class HorrorManager {
                 y,
                 x + gap + size,
                 y + size,
-                0xD0000000 | color
+                0xD0000000 |
+                        color
         );
 
         if (RANDOM.nextInt(100) < 30) {
@@ -1409,6 +1970,7 @@ public final class HorrorManager {
             int width,
             int height
     ) {
+
         int side =
                 RANDOM.nextBoolean()
                         ? 0
@@ -1423,18 +1985,20 @@ public final class HorrorManager {
 
         int y =
                 20 +
-                RANDOM.nextInt(
-                        Math.max(
-                                1,
-                                height - 40
-                        )
-                );
+                        RANDOM.nextInt(
+                                Math.max(
+                                        1,
+                                        height - 40
+                                )
+                        );
 
         int w =
-                3 + RANDOM.nextInt(12);
+                3 +
+                        RANDOM.nextInt(12);
 
         int h =
-                20 + RANDOM.nextInt(70);
+                20 +
+                        RANDOM.nextInt(70);
 
         context.fill(
                 x,
@@ -1480,16 +2044,20 @@ public final class HorrorManager {
             int width,
             int height
     ) {
+
         int x =
                 8 +
-                RANDOM.nextInt(
-                        Math.max(1, width / 4)
-                );
+                        RANDOM.nextInt(
+                                Math.max(
+                                        1,
+                                        width / 4
+                                )
+                        );
 
         int y =
                 height -
-                44 -
-                RANDOM.nextInt(50);
+                        44 -
+                        RANDOM.nextInt(50);
 
         context.fill(
                 x - 4,
@@ -1526,6 +2094,7 @@ public final class HorrorManager {
             int height,
             int level
     ) {
+
         context.fill(
                 0,
                 0,
@@ -1536,35 +2105,57 @@ public final class HorrorManager {
 
         int bars =
                 8 +
-                RANDOM.nextInt(
-                        18 + level * 7
-                );
+                        RANDOM.nextInt(
+                                18 +
+                                        level * 7
+                        );
 
-        for (int i = 0; i < bars; i++) {
+        for (int i = 0;
+             i < bars;
+             i++) {
 
             int y =
                     RANDOM.nextInt(
-                            Math.max(1, height)
+                            Math.max(
+                                    1,
+                                    height
+                            )
                     );
 
             int h =
                     1 +
-                    RANDOM.nextInt(
-                            4 + Math.min(5, level)
-                    );
+                            RANDOM.nextInt(
+                                    4 +
+                                            Math.min(
+                                                    5,
+                                                    level
+                                            )
+                            );
 
             int alpha =
                     20 +
-                    RANDOM.nextInt(110);
+                            RANDOM.nextInt(110);
 
             int color =
                     switch (glitchStyle % 6) {
-                        case 0 -> 0xFFFFFF;
-                        case 1 -> 0xAA0000;
-                        case 2 -> 0xFF2020;
-                        case 3 -> 0x111111;
-                        case 4 -> 0x770000;
-                        default -> 0xCCCCCC;
+
+                        case 0 ->
+                                0xFFFFFF;
+
+                        case 1 ->
+                                0xAA0000;
+
+                        case 2 ->
+                                0xFF2020;
+
+                        case 3 ->
+                                0x111111;
+
+                        case 4 ->
+                                0x770000;
+
+                        default ->
+                                0xCCCCCC;
                     };
 
             context.fill(
@@ -1575,41 +2166,52 @@ public final class HorrorManager {
                             height,
                             y + h
                     ),
-                    (alpha << 24) | color
+                    (alpha << 24) |
+                            color
             );
         }
 
         int blocks =
                 18 +
-                RANDOM.nextInt(
-                        42 + level * 20
-                );
+                        RANDOM.nextInt(
+                                42 +
+                                        level * 20
+                        );
 
-        for (int i = 0; i < blocks; i++) {
+        for (int i = 0;
+             i < blocks;
+             i++) {
 
             int x =
                     RANDOM.nextInt(
-                            Math.max(1, width)
+                            Math.max(
+                                    1,
+                                    width
+                            )
                     );
 
             int y =
                     RANDOM.nextInt(
-                            Math.max(1, height)
+                            Math.max(
+                                    1,
+                                    height
+                            )
                     );
 
             int w =
                     1 +
-                    RANDOM.nextInt(
-                            20 + level * 12
-                    );
+                            RANDOM.nextInt(
+                                    20 +
+                                            level * 12
+                            );
 
             int h =
                     1 +
-                    RANDOM.nextInt(7);
+                            RANDOM.nextInt(7);
 
             int alpha =
                     12 +
-                    RANDOM.nextInt(105);
+                            RANDOM.nextInt(105);
 
             int color =
                     RANDOM.nextInt(100) < 72
@@ -1627,7 +2229,8 @@ public final class HorrorManager {
                             height,
                             y + h
                     ),
-                    (alpha << 24) | color
+                    (alpha << 24) |
+                            color
             );
         }
 
@@ -1659,6 +2262,7 @@ public final class HorrorManager {
             int height,
             int level
     ) {
+
         context.fill(
                 0,
                 0,
@@ -1668,7 +2272,9 @@ public final class HorrorManager {
         );
 
         // Scanlines.
-        for (int y = 0; y < height; y += 3) {
+        for (int y = 0;
+             y < height;
+             y += 3) {
 
             context.fill(
                     0,
@@ -1682,27 +2288,31 @@ public final class HorrorManager {
             );
         }
 
-        // Rare red/black tracking tears.
         int tears =
                 3 +
-                RANDOM.nextInt(
-                        4 + level
-                );
+                        RANDOM.nextInt(
+                                4 + level
+                        );
 
-        for (int i = 0; i < tears; i++) {
+        for (int i = 0;
+             i < tears;
+             i++) {
 
             int y =
                     RANDOM.nextInt(
-                            Math.max(1, height)
+                            Math.max(
+                                    1,
+                                    height
+                            )
                     );
 
             int h =
                     1 +
-                    RANDOM.nextInt(9);
+                            RANDOM.nextInt(9);
 
             int alpha =
                     18 +
-                    RANDOM.nextInt(50);
+                            RANDOM.nextInt(50);
 
             int color =
                     RANDOM.nextInt(100) < 70
@@ -1717,15 +2327,16 @@ public final class HorrorManager {
                             height,
                             y + h
                     ),
-                    (alpha << 24) | color
+                    (alpha << 24) |
+                            color
             );
         }
 
-        // Slight chromatic split.
         if (RANDOM.nextInt(100) < 35) {
 
             int offset =
-                    2 + RANDOM.nextInt(5);
+                    2 +
+                            RANDOM.nextInt(5);
 
             context.fill(
                     offset,
