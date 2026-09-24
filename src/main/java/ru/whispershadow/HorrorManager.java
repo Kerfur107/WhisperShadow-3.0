@@ -210,6 +210,45 @@ public final class HorrorManager {
     private static final int RUN_DURATION_TICKS = 20 * 20;
     private static final int CHASE_SOUND_TICKS = 20 * 20;
     private static int chaseSoundTicks = 0;
+//Player skin
+    private static com.mojang.authlib.GameProfile getRandomPlayerProfile(
+        MinecraftClient client
+) {
+
+    List<PlayerListEntry> players =
+            new ArrayList<>();
+
+    for (PlayerListEntry entry :
+            client.player.networkHandler
+                    .getPlayerList()) {
+
+        if (entry.getProfile() != null &&
+                !entry.getProfile()
+                        .id()
+                        .equals(
+                                client.player
+                                        .getGameProfile()
+                                        .id()
+                        )) {
+
+            players.add(entry);
+        }
+    }
+
+    if (!players.isEmpty()) {
+
+        PlayerListEntry selected =
+                players.get(
+                        RANDOM.nextInt(
+                                players.size()
+                        )
+                );
+
+        return selected.getProfile();
+    }
+
+    return client.player.getGameProfile();
+}
 
     // DON'T MOVE
     private static boolean dontMoveActive = false;
@@ -800,7 +839,7 @@ public final class HorrorManager {
         ShadowEntity entity =
                 new ShadowEntity(
                         client.world,
-                        client.player.getGameProfile(),
+                        getRandomPlayerProfile(client),
                         false
                 );
 
@@ -1165,7 +1204,7 @@ public final class HorrorManager {
         ShadowEntity entity =
                 new ShadowEntity(
                         client.world,
-                        client.player.getGameProfile(),
+                        getRandomPlayerProfile(client),
                         false
                 );
 
@@ -1675,7 +1714,7 @@ public final class HorrorManager {
         doppelganger =
                 new ShadowEntity(
                         client.world,
-                        client.player.getGameProfile(),
+                        getRandomPlayerProfile(client),
                         RANDOM.nextBoolean()
                 );
 
