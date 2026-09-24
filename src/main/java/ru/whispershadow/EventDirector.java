@@ -18,13 +18,16 @@ public final class EventDirector {
 
     private EventDirector() {}
 
-    public static void tick(MinecraftClient client) {
+    public static void tick(
+            MinecraftClient client
+    ) {
 
         if (client.player == null ||
                 client.world == null) {
 
             queue.clear();
             cooldown = 0;
+
             return;
         }
 
@@ -52,7 +55,7 @@ public final class EventDirector {
 
             cooldown =
                     100 +
-                    RANDOM.nextInt(520);
+                            RANDOM.nextInt(520);
         }
     }
 
@@ -204,6 +207,25 @@ public final class EventDirector {
             );
         }
 
+        /*
+         * Very rare DON'T MOVE event.
+         *
+         * Available from insanity level 2.
+         * This is intentionally independent from
+         * the main event roll so existing event
+         * probabilities stay almost unchanged.
+         */
+        if (level >= 2 &&
+                RANDOM.nextInt(140) == 0) {
+
+            queue.add(
+                    new ScheduledEvent(
+                            EventType.DONT_MOVE,
+                            delay(60, 260)
+                    )
+            );
+        }
+
         // Rare chained event.
         if (RANDOM.nextInt(19) == 0) {
 
@@ -241,37 +263,53 @@ public final class EventDirector {
         switch (type) {
 
             case LOCAL_MESSAGE ->
-                    HorrorManager.fireDirectorMessage(client);
+                    HorrorManager.fireDirectorMessage(
+                            client
+                    );
 
             case GLITCH ->
                     HorrorManager.fireDirectorGlitch();
 
             case WHISPER ->
-                    HorrorManager.fireDirectorWhisper(client);
+                    HorrorManager.fireDirectorWhisper(
+                            client
+                    );
 
             case FIGURE ->
-                    HorrorManager.fireDirectorFigure(client);
+                    HorrorManager.fireDirectorFigure(
+                            client
+                    );
 
             case DECOY ->
-                    HorrorManager.fireDecoy(client);
+                    HorrorManager.fireDecoy(
+                            client
+                    );
 
             case VHS ->
                     HorrorManager.fireDirectorVhs();
 
             case TAB_MESSAGE ->
-                    HorrorManager.fireTabIllusion(client);
+                    HorrorManager.fireTabIllusion(
+                            client
+                    );
 
             case EYES ->
                     HorrorManager.fireEyes();
 
             case FOOTSTEPS ->
-                    HorrorManager.fireFootsteps(client);
+                    HorrorManager.fireFootsteps(
+                            client
+                    );
 
             case TORCHES ->
-                    HorrorManager.fireTorchIllusion(client);
+                    HorrorManager.fireTorchIllusion(
+                            client
+                    );
 
             case DOPPELGANGER ->
-                    HorrorManager.fireDoppelganger(client);
+                    HorrorManager.fireDoppelganger(
+                            client
+                    );
 
             case PERIPHERAL ->
                     HorrorManager.firePeripheral();
@@ -280,7 +318,14 @@ public final class EventDirector {
                     HorrorManager.fireWorldDistortion();
 
             case RUN ->
-                    HorrorManager.fireRun(client);
+                    HorrorManager.fireRun(
+                            client
+                    );
+
+            case DONT_MOVE ->
+                    HorrorManager.fireDontMove(
+                            client
+                    );
 
             case SILENCE -> {
                 // Intentionally empty.
@@ -321,6 +366,8 @@ public final class EventDirector {
         WORLD_DISTORT,
 
         RUN,
+
+        DONT_MOVE,
 
         SILENCE
     }
