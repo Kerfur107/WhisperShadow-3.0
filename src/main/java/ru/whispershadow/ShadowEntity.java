@@ -1,5 +1,6 @@
 package ru.whispershadow;
 
+import net.minecraft.entity.MovementType;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.OtherClientPlayerEntity;
@@ -74,38 +75,38 @@ public final class ShadowEntity extends OtherClientPlayerEntity {
      */
     public void chasePlayer(ClientPlayerEntity player) {
 
-        Vec3d target =
-                player.getEntityPos();
+    Vec3d target =
+            player.getEntityPos();
 
-        double dx =
-                target.x - getX();
+    double dx =
+            target.x - getX();
 
-        double dz =
-                target.z - getZ();
+    double dz =
+            target.z - getZ();
 
-        double distance =
-                Math.sqrt(dx * dx + dz * dz);
+    double distance =
+            Math.sqrt(dx * dx + dz * dz);
 
-        if (distance > 0.01) {
+    if (distance > 0.01) {
 
-            /*
-             * Chase speed.
-             *
-             * The Shadow starts several blocks behind
-             * the player and gradually catches up.
-             */
-            double speed = 0.105;
+        double speed = 0.105;
 
-            setPos(
-                    getX() + (dx / distance) * speed,
-                    getY() + (target.y - getY()) * 0.08,
-                    getZ() + (dz / distance) * speed
-            );
-        }
-
-        lookAt(
-                EntityAnchorArgumentType.EntityAnchor.EYES,
-                player.getEyePos()
+        setVelocity(
+                (dx / distance) * speed,
+                (target.y - getY()) * 0.08,
+                (dz / distance) * speed
         );
+
+        move(
+                MovementType.SELF,
+                getVelocity()
+        );
+
+        setVelocity(0.0, 0.0, 0.0);
     }
+
+    lookAt(
+            EntityAnchorArgumentType.EntityAnchor.EYES,
+            player.getEyePos()
+    );
 }
