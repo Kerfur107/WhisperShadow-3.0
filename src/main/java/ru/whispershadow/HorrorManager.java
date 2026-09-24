@@ -115,7 +115,7 @@ public final class HorrorManager {
             "I was never far away.",
             "You invited me.",
             "You noticed.",
-            "Now I notice you."
+            "Now I notice you"
     };
 
     private static final String[] GENERIC_REPLIES = {
@@ -154,41 +154,26 @@ public final class HorrorManager {
             "d̶o̶ ̶n̶o̶t̶ ̶l̶o̶o̶k̶"
     };
 
-    // =========================================================
     // GENERAL HORROR STATE
-    // =========================================================
-
     private static int glitchTicks = 0;
     private static int glitchStyle = 0;
     private static int vhsTicks = 0;
-
     private static int figureTicks = 0;
-
     private static int replyDelay = 0;
     private static String pendingReply = null;
-
     private static ShadowEntity figure = null;
-
     private static int doppelgangerTicks = 0;
     private static ShadowEntity doppelganger = null;
-
     private static int eyesTicks = 0;
     private static int peripheralTicks = 0;
     private static int distortionTicks = 0;
-
     private static int torchTicks = 0;
-
-    private static final Map<BlockPos, BlockState> hiddenTorches =
-            new HashMap<>();
-
+    private static final Map<BlockPos, BlockState> hiddenTorches = new HashMap<>();
     private static String tabIllusion = null;
     private static int tabIllusionTicks = 0;
     private static int tabMessageCooldown = 0;
 
-    // =========================================================
     // SHOW YOURSELF
-    // =========================================================
-
     private static int showYourselfCooldown = 0;
     private static int showYourselfDelay = 0;
     private static boolean showYourselfPending = false;
@@ -216,45 +201,30 @@ public final class HorrorManager {
             "Keep looking."
     };
 
-    // =========================================================
     // RUN / CHASE
-    // =========================================================
-
     private static boolean runActive = false;
-
     private static int runTicks = 0;
-
-    /*
-     * 20 seconds.
-     */
-    private static final int RUN_DURATION_TICKS =
-            20 * 20;
-
-    /*
-     * Restart the chase track periodically.
-     *
-     * This assumes the supplied Circuit track is around
-     * 20 seconds long.
-     */
-    private static final int CHASE_SOUND_TICKS =
-            20 * 20;
-
+    private static final int RUN_DURATION_TICKS = 20 * 20;
+    private static final int CHASE_SOUND_TICKS = 20 * 20;
     private static int chaseSoundTicks = 0;
+
+    // DON'T MOVE
+    private static boolean dontMoveActive = false;
+    private static int dontMoveTicks = 0;
+
+    private static double dontMoveStartX = 0.0;
+    private static double dontMoveStartY = 0.0;
+    private static double dontMoveStartZ = 0.0;
+
+    private static final int DONT_MOVE_DURATION_TICKS = 20 * 3;
 
     private HorrorManager() {}
 
     public static void init() {}
 
-    // =========================================================
     // PLAYER CHAT
-    // =========================================================
-
-    public static void handlePlayerChat(
-            String message
-    ) {
-
-        MinecraftClient client =
-                MinecraftClient.getInstance();
+    public static void handlePlayerChat(String message) {
+        MinecraftClient client = MinecraftClient.getInstance();
 
         if (client.player == null ||
                 message == null ||
@@ -262,20 +232,14 @@ public final class HorrorManager {
             return;
 
         String cleanMessage =
-                message.trim()
-                        .toLowerCase(Locale.ROOT);
-
-        // =====================================================
-        // SHOW YOURSELF
-        // =====================================================
+                message.trim().toLowerCase(Locale.ROOT);
 
         if (cleanMessage.equals("show yourself")) {
 
             if (showYourselfCooldown > 0)
                 return;
 
-            showYourselfCooldown =
-                    20 * 30;
+            showYourselfCooldown = 20 * 30;
 
             boolean shadowAppears =
                     RANDOM.nextInt(100) < 15;
@@ -308,20 +272,16 @@ public final class HorrorManager {
 
                 replyDelay =
                         25 +
-                        RANDOM.nextInt(45);
+                                RANDOM.nextInt(45);
 
                 InsanityManager.add(
                         0.3f +
-                        RANDOM.nextFloat() * 1.2f
+                                RANDOM.nextFloat() * 1.2f
                 );
             }
 
             return;
         }
-
-        // =====================================================
-        // NORMAL CHAT SYSTEM
-        // =====================================================
 
         int level =
                 InsanityManager.getLevelNumber();
@@ -345,21 +305,16 @@ public final class HorrorManager {
 
         replyDelay =
                 25 +
-                RANDOM.nextInt(150);
+                        RANDOM.nextInt(150);
 
         InsanityManager.add(
                 0.7f +
-                RANDOM.nextFloat() * 2.0f
+                        RANDOM.nextFloat() * 2.0f
         );
     }
 
-    // =========================================================
     // NORMAL REPLIES
-    // =========================================================
-
-    private static String chooseReply(
-            String input
-    ) {
+    private static String chooseReply(String input) {
 
         String clean =
                 input.trim();
@@ -368,10 +323,12 @@ public final class HorrorManager {
                 clean.toLowerCase(Locale.ROOT);
 
         String normalized =
-                lower.replaceAll(
-                        "[^a-z0-9? ]",
-                        ""
-                ).trim();
+                lower
+                        .replaceAll(
+                                "[^a-z0-9? ]",
+                                ""
+                        )
+                        .trim();
 
         if (lower.contains("where are you") ||
                 lower.contains("where r u"))
@@ -435,13 +392,8 @@ public final class HorrorManager {
         ];
     }
 
-    // =========================================================
     // TICK
-    // =========================================================
-
-    public static void tick(
-            MinecraftClient client
-    ) {
+    public static void tick(MinecraftClient client) {
 
         InsanityManager.tick(client);
         EventDirector.tick(client);
@@ -450,7 +402,6 @@ public final class HorrorManager {
                 client.world == null) {
 
             stopChase(client);
-
             removeFigure(client);
 
             replyDelay = 0;
@@ -465,7 +416,10 @@ public final class HorrorManager {
                     peripheralTicks =
                     distortionTicks =
                     torchTicks =
-                    tabIllusionTicks = 0;
+                    tabIllusionTicks =
+                    dontMoveTicks = 0;
+
+            dontMoveActive = false;
 
             showYourselfCooldown = 0;
             showYourselfDelay = 0;
@@ -474,16 +428,8 @@ public final class HorrorManager {
             return;
         }
 
-        // =====================================================
-        // SHOW YOURSELF COOLDOWN
-        // =====================================================
-
         if (showYourselfCooldown > 0)
             showYourselfCooldown--;
-
-        // =====================================================
-        // SHOW YOURSELF DELAY
-        // =====================================================
 
         if (showYourselfPending) {
 
@@ -526,10 +472,6 @@ public final class HorrorManager {
             }
         }
 
-        // =====================================================
-        // NORMAL REPLY DELAY
-        // =====================================================
-
         if (replyDelay > 0)
             replyDelay--;
 
@@ -543,10 +485,6 @@ public final class HorrorManager {
 
             pendingReply = null;
         }
-
-        // =====================================================
-        // EFFECT TIMERS
-        // =====================================================
 
         if (glitchTicks > 0)
             glitchTicks--;
@@ -569,9 +507,87 @@ public final class HorrorManager {
         if (tabMessageCooldown > 0)
             tabMessageCooldown--;
 
-        // =====================================================
-        // DOPPELGANGER
-        // =====================================================
+        // DON'T MOVE
+        if (dontMoveActive) {
+
+            dontMoveTicks--;
+
+            double dx =
+                    client.player.getX() -
+                            dontMoveStartX;
+
+            double dy =
+                    client.player.getY() -
+                            dontMoveStartY;
+
+            double dz =
+                    client.player.getZ() -
+                            dontMoveStartZ;
+
+            double movedSq =
+                    dx * dx +
+                            dy * dy +
+                            dz * dz;
+
+            /*
+             * Small tolerance prevents tiny floating-point
+             * position changes from triggering the event.
+             */
+            if (movedSq > 0.0025) {
+
+                dontMoveActive = false;
+                dontMoveTicks = 0;
+
+                client.player.sendMessage(
+                        Text.literal("YOU MOVED.")
+                                .formatted(
+                                        Formatting.DARK_RED,
+                                        Formatting.BOLD
+                                ),
+                        false
+                );
+
+                client.player.playSound(
+                        ModSounds.GLITCH,
+                        0.45f,
+                        0.55f +
+                                RANDOM.nextFloat() * 0.25f
+                );
+
+                client.player.playSound(
+                        ModSounds.STATIC,
+                        0.30f,
+                        0.45f +
+                                RANDOM.nextFloat() * 0.25f
+                );
+
+                fireDirectorGlitch();
+
+                InsanityManager.add(
+                        8.0f +
+                                RANDOM.nextFloat() * 6.0f
+                );
+
+            } else if (dontMoveTicks <= 0) {
+
+                dontMoveActive = false;
+                dontMoveTicks = 0;
+
+                /*
+                 * Player stayed still.
+                 * No punishment.
+                 */
+                client.player.playSound(
+                        ModSounds.WHISPER,
+                        0.08f,
+                        0.40f +
+                                RANDOM.nextFloat() * 0.20f
+                );
+
+                if (RANDOM.nextInt(100) < 25)
+                    fireEyes();
+            }
+        }
 
         if (doppelgangerTicks > 0 &&
                 doppelganger != null) {
@@ -587,10 +603,6 @@ public final class HorrorManager {
             removeDoppelganger(client);
         }
 
-        // =====================================================
-        // TORCH ILLUSION
-        // =====================================================
-
         if (torchTicks > 0) {
 
             torchTicks--;
@@ -599,10 +611,6 @@ public final class HorrorManager {
                 restoreTorches(client);
         }
 
-        // =====================================================
-        // RUN / CHASE
-        // =====================================================
-
         if (runActive) {
 
             runTicks--;
@@ -610,13 +618,8 @@ public final class HorrorManager {
             if (chaseSoundTicks > 0)
                 chaseSoundTicks--;
 
-            /*
-             * Restart the chase track if its timer expires.
-             */
-            if (chaseSoundTicks <= 0) {
-
+            if (chaseSoundTicks <= 0)
                 playChaseSound(client);
-            }
 
             if (figure != null) {
 
@@ -624,23 +627,15 @@ public final class HorrorManager {
                         client.player
                 );
 
-                /*
-                 * The Shadow caught the player.
-                 */
                 if (figure.getBoundingBox()
                         .expand(0.30)
                         .intersects(
-                                client.player.getBoundingBox()
+                                client.player
+                                        .getBoundingBox()
                         )) {
 
                     InsanityManager.add(20.0f);
 
-                    /*
-                     * 5% rare finale.
-                     *
-                     * This is a client-side disconnect,
-                     * not a real server kick.
-                     */
                     if (RANDOM.nextInt(100) < 5) {
 
                         stopChase(client);
@@ -655,15 +650,11 @@ public final class HorrorManager {
                         return;
                     }
 
-                    /*
-                     * Normal catch.
-                     */
                     client.player.sendMessage(
-                            Text.literal(
-                                    "..."
-                            ).formatted(
-                                    Formatting.DARK_RED
-                            ),
+                            Text.literal("...")
+                                    .formatted(
+                                            Formatting.DARK_RED
+                                    ),
                             false
                     );
 
@@ -676,34 +667,21 @@ public final class HorrorManager {
                 }
             }
 
-            /*
-             * Chase timer ended.
-             */
             if (runTicks <= 0) {
 
                 stopChase(client);
-
                 removeFigure(client);
 
                 client.player.sendMessage(
-                        Text.literal(
-                                "..."
-                        ).formatted(
-                                Formatting.DARK_GRAY
-                        ),
+                        Text.literal("...")
+                                .formatted(
+                                        Formatting.DARK_GRAY
+                                ),
                         false
                 );
             }
         }
 
-        // =====================================================
-        // MAIN FIGURE
-        // =====================================================
-
-        /*
-         * Normal figure logic must not run while
-         * RUN is active.
-         */
         if (!runActive) {
 
             if (figureTicks > 0) {
@@ -743,10 +721,7 @@ public final class HorrorManager {
         }
     }
 
-    // =========================================================
     // RUN EVENT
-    // =========================================================
-
     public static void fireRun(
             MinecraftClient client
     ) {
@@ -755,27 +730,21 @@ public final class HorrorManager {
                 client.world == null)
             return;
 
-        /*
-         * Do not start another RUN over an existing one.
-         */
         if (runActive)
             return;
 
+        // Don't let RUN overlap with DON'T MOVE.
+        if (dontMoveActive) {
+            dontMoveActive = false;
+            dontMoveTicks = 0;
+        }
+
         runActive = true;
-
-        runTicks =
-                RUN_DURATION_TICKS;
-
+        runTicks = RUN_DURATION_TICKS;
         chaseSoundTicks = 0;
 
-        /*
-         * Remove an ordinary Shadow first.
-         */
         removeFigure(client);
 
-        /*
-         * Start the chase Shadow.
-         */
         spawnChaseFigure(client);
 
         client.player.sendMessage(
@@ -787,14 +756,8 @@ public final class HorrorManager {
                 false
         );
 
-        /*
-         * Strong glitch at the beginning.
-         */
         fireDirectorGlitch();
 
-        /*
-         * Start Circuit.
-         */
         playChaseSound(client);
 
         InsanityManager.add(
@@ -811,13 +774,10 @@ public final class HorrorManager {
                 client.world == null)
             return;
 
-        /*
-         * Spawn behind the player.
-         */
         double yaw =
                 Math.toRadians(
-                        client.player.getYaw()
-                                + 180.0
+                        client.player.getYaw() +
+                                180.0
                 );
 
         double distance =
@@ -825,14 +785,14 @@ public final class HorrorManager {
                         RANDOM.nextDouble() * 3.0;
 
         double x =
-                client.player.getX()
-                        + Math.sin(yaw)
-                        * distance;
+                client.player.getX() +
+                        Math.sin(yaw) *
+                                distance;
 
         double z =
-                client.player.getZ()
-                        - Math.cos(yaw)
-                        * distance;
+                client.player.getZ() -
+                        Math.cos(yaw) *
+                                distance;
 
         ShadowEntity entity =
                 new ShadowEntity(
@@ -861,9 +821,6 @@ public final class HorrorManager {
 
         figure = entity;
 
-        /*
-         * RUN controls its lifetime.
-         */
         figureTicks =
                 RUN_DURATION_TICKS;
     }
@@ -875,9 +832,6 @@ public final class HorrorManager {
         if (client.player == null)
             return;
 
-        /*
-         * Prevent two copies from overlapping.
-         */
         client.getSoundManager().stopSounds(
                 ModSounds.CIRCUIT_CHASE_ID,
                 null
@@ -901,19 +855,55 @@ public final class HorrorManager {
         runTicks = 0;
         chaseSoundTicks = 0;
 
-        /*
-         * Immediately stop Circuit.
-         */
         client.getSoundManager().stopSounds(
                 ModSounds.CIRCUIT_CHASE_ID,
                 null
         );
     }
 
-    // =========================================================
-    // DELIVER REPLY
-    // =========================================================
+    // DON'T MOVE EVENT
+    public static void fireDontMove(
+            MinecraftClient client
+    ) {
 
+        if (client.player == null ||
+                client.world == null ||
+                dontMoveActive ||
+                runActive)
+            return;
+
+        // Available from insanity level 2.
+        if (InsanityManager.getLevelNumber() < 2)
+            return;
+
+        dontMoveActive = true;
+
+        dontMoveTicks =
+                DONT_MOVE_DURATION_TICKS;
+
+        dontMoveStartX =
+                client.player.getX();
+
+        dontMoveStartY =
+                client.player.getY();
+
+        dontMoveStartZ =
+                client.player.getZ();
+
+        client.player.playSound(
+                ModSounds.WHISPER,
+                0.22f,
+                0.45f +
+                        RANDOM.nextFloat() * 0.20f
+        );
+
+        InsanityManager.add(
+                1.5f +
+                        RANDOM.nextFloat() * 1.5f
+        );
+    }
+
+    // DELIVER REPLY
     private static void deliverReply(
             MinecraftClient client,
             String reply
@@ -975,10 +965,7 @@ public final class HorrorManager {
         }
     }
 
-    // =========================================================
     // DIRECTOR EVENTS
-    // =========================================================
-
     public static void fireDirectorMessage(
             MinecraftClient client
     ) {
@@ -1011,7 +998,8 @@ public final class HorrorManager {
         glitchTicks =
                 2 +
                         RANDOM.nextInt(
-                                5 + level * 3
+                                5 +
+                                        level * 3
                         );
 
         glitchStyle =
@@ -1109,10 +1097,7 @@ public final class HorrorManager {
         );
     }
 
-    // =========================================================
     // SPAWN SHADOW
-    // =========================================================
-
     private static void spawnFigure(
             MinecraftClient client,
             int level
@@ -1126,8 +1111,8 @@ public final class HorrorManager {
 
             angle =
                     Math.toRadians(
-                            client.player.getYaw()
-                                    + 180.0
+                            client.player.getYaw() +
+                                    180.0
                     );
 
             distance =
@@ -1138,7 +1123,8 @@ public final class HorrorManager {
 
             angle =
                     RANDOM.nextDouble() *
-                            Math.PI * 2.0;
+                            Math.PI *
+                            2.0;
 
             distance =
                     HorrorConfig.FIGURE_MIN_DISTANCE +
@@ -1151,11 +1137,13 @@ public final class HorrorManager {
 
         double x =
                 client.player.getX() +
-                        Math.cos(angle) * distance;
+                        Math.cos(angle) *
+                                distance;
 
         double z =
                 client.player.getZ() +
-                        Math.sin(angle) * distance;
+                        Math.sin(angle) *
+                                distance;
 
         ShadowEntity entity =
                 new ShadowEntity(
@@ -1206,10 +1194,7 @@ public final class HorrorManager {
         figureTicks = 0;
     }
 
-    // =========================================================
     // CHAT COLORS
-    // =========================================================
-
     private static MutableText coloredEntityText(
             String message
     ) {
@@ -1294,10 +1279,7 @@ public final class HorrorManager {
         return out;
     }
 
-    // =========================================================
     // TAB ILLUSION
-    // =========================================================
-
     public static void fireTabIllusion(
             MinecraftClient client
     ) {
@@ -1376,10 +1358,7 @@ public final class HorrorManager {
         );
     }
 
-    // =========================================================
     // OTHER EVENTS
-    // =========================================================
-
     public static void fireEyes() {
 
         eyesTicks =
@@ -1505,10 +1484,7 @@ public final class HorrorManager {
         );
     }
 
-    // =========================================================
     // TORCH ILLUSION
-    // =========================================================
-
     public static void fireTorchIllusion(
             MinecraftClient client
     ) {
@@ -1636,10 +1612,7 @@ public final class HorrorManager {
         hiddenTorches.clear();
     }
 
-    // =========================================================
     // DOPPELGANGER
-    // =========================================================
-
     public static void fireDoppelganger(
             MinecraftClient client
     ) {
@@ -1691,7 +1664,8 @@ public final class HorrorManager {
                 x,
                 client.player.getY(),
                 z,
-                client.player.getYaw() + 180.0f,
+                client.player.getYaw() +
+                        180.0f,
                 0.0f
         );
 
@@ -1727,10 +1701,7 @@ public final class HorrorManager {
         doppelgangerTicks = 0;
     }
 
-    // =========================================================
     // OVERLAY
-    // =========================================================
-
     public static void renderOverlay(
             DrawContext context,
             RenderTickCounter tickCounter
@@ -1741,7 +1712,8 @@ public final class HorrorManager {
                 eyesTicks <= 0 &&
                 peripheralTicks <= 0 &&
                 distortionTicks <= 0 &&
-                tabIllusionTicks <= 0)
+                tabIllusionTicks <= 0 &&
+                !dontMoveActive)
             return;
 
         int width =
@@ -1797,12 +1769,73 @@ public final class HorrorManager {
                     width,
                     height
             );
+
+        if (dontMoveActive)
+            renderDontMove(
+                    context,
+                    width,
+                    height
+            );
     }
 
-    // =========================================================
-    // WORLD DISTORTION
-    // =========================================================
+    // DON'T MOVE RENDER
+    private static void renderDontMove(
+            DrawContext context,
+            int width,
+            int height
+    ) {
 
+        int alpha =
+                35 +
+                        RANDOM.nextInt(35);
+
+        context.fill(
+                0,
+                0,
+                width,
+                height,
+                (alpha << 24) |
+                        0x000000
+        );
+
+        MinecraftClient client =
+                MinecraftClient.getInstance();
+
+        var textRenderer =
+                client.textRenderer;
+
+        Text text =
+                Text.literal("DON'T MOVE")
+                        .formatted(
+                                Formatting.DARK_RED,
+                                Formatting.BOLD
+                        );
+
+        int textWidth =
+                textRenderer.getWidth(text);
+
+        int x =
+                (width - textWidth) / 2;
+
+        int y =
+                height / 2 - 12;
+
+        int color =
+                RANDOM.nextInt(100) < 12
+                        ? 0xFFFFFFFF
+                        : 0xFFAA0000;
+
+        context.drawText(
+                textRenderer,
+                text,
+                x,
+                y,
+                color,
+                true
+        );
+    }
+
+    // WORLD DISTORTION
     private static void renderWorldDistortion(
             DrawContext context,
             int width,
@@ -1864,10 +1897,7 @@ public final class HorrorManager {
         }
     }
 
-    // =========================================================
     // EYES
-    // =========================================================
-
     private static void renderEyes(
             DrawContext context,
             int width,
@@ -1961,10 +1991,7 @@ public final class HorrorManager {
         }
     }
 
-    // =========================================================
     // PERIPHERAL
-    // =========================================================
-
     private static void renderPeripheral(
             DrawContext context,
             int width,
@@ -2035,10 +2062,7 @@ public final class HorrorManager {
         }
     }
 
-    // =========================================================
     // TAB ILLUSION RENDER
-    // =========================================================
-
     private static void renderTabIllusion(
             DrawContext context,
             int width,
@@ -2084,10 +2108,7 @@ public final class HorrorManager {
         );
     }
 
-    // =========================================================
     // GLITCH
-    // =========================================================
-
     private static void renderGlitch(
             DrawContext context,
             int width,
@@ -2138,24 +2159,12 @@ public final class HorrorManager {
 
             int color =
                     switch (glitchStyle % 6) {
-
-                        case 0 ->
-                                0xFFFFFF;
-
-                        case 1 ->
-                                0xAA0000;
-
-                        case 2 ->
-                                0xFF2020;
-
-                        case 3 ->
-                                0x111111;
-
-                        case 4 ->
-                                0x770000;
-
-                        default ->
-                                0xCCCCCC;
+                        case 0 -> 0xFFFFFF;
+                        case 1 -> 0xAA0000;
+                        case 2 -> 0xFF2020;
+                        case 3 -> 0x111111;
+                        case 4 -> 0x770000;
+                        default -> 0xCCCCCC;
                     };
 
             context.fill(
@@ -2252,10 +2261,7 @@ public final class HorrorManager {
         }
     }
 
-    // =========================================================
     // VHS
-    // =========================================================
-
     private static void renderVhs(
             DrawContext context,
             int width,
@@ -2271,7 +2277,6 @@ public final class HorrorManager {
                 0x12000000
         );
 
-        // Scanlines.
         for (int y = 0;
              y < height;
              y += 3) {
@@ -2291,7 +2296,8 @@ public final class HorrorManager {
         int tears =
                 3 +
                         RANDOM.nextInt(
-                                4 + level
+                                4 +
+                                        level
                         );
 
         for (int i = 0;
