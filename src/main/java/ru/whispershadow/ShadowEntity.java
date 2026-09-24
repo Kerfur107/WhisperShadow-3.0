@@ -13,6 +13,9 @@ public final class ShadowEntity extends OtherClientPlayerEntity {
     private final boolean delayedMotion;
     private Vec3d lastPlayerPos;
 
+    // Прогресс погони: 0.0 -> начало, 1.0 -> конец.
+    private double chaseProgress = 0.0;
+
     public ShadowEntity(
             ClientWorld world,
             GameProfile profile,
@@ -93,7 +96,63 @@ public final class ShadowEntity extends OtherClientPlayerEntity {
 
         if (distance > 0.01) {
 
-            double speed = 0.105;
+            /*
+             * РАЗГОН ОТ ВРЕМЕНИ ПОГОНЯ
+             *
+             * В начале:
+             * 0.14
+             *
+             * В конце:
+             * примерно 0.30
+             */
+            double timeSpeed =
+                    0.14 +
+                            chaseProgress * 0.16;
+
+            /*
+             * РАЗГОН ОТ РАССТОЯНИЯ
+             *
+             * Далеко -> быстрее
+             * Близко -> немного медленнее
+             */
+            double distanceBonus;
+
+            if (distance > 20.0) {
+
+                distanceBonus = 0.10;
+
+            } else if (distance > 12.0) {
+
+                distanceBonus = 0.07;
+
+            } else if (distance > 7.0) {
+
+                distanceBonus = 0.04;
+
+            } else if (distance > 3.0) {
+
+                distanceBonus = 0.01;
+
+            } else {
+
+                distanceBonus = -0.02;
+            }
+
+            double speed =
+                    timeSpeed +
+                            distanceBonus;
+
+            /*
+             * Безопасные пределы скорости.
+             */
+            speed =
+                    Math.max(
+                            0.10,
+                            Math.min(
+                                    0.34,
+                                    speed
+                            )
+                    );
 
             double velocityX =
                     (dx / distance) * speed;
@@ -119,6 +178,16 @@ public final class ShadowEntity extends OtherClientPlayerEntity {
                     Vec3d.ZERO
             );
         }
+
+        /*
+         * Медленно увеличиваем скорость
+         * с каждым игровым тиком.
+         */
+        chaseProgress =
+                Math.min(
+                        1.0,
+                        chaseProgress + 0.001
+                );
 
         lookAt(
                 EntityAnchorArgumentType.EntityAnchor.EYES,
