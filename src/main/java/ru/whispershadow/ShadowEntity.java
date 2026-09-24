@@ -17,14 +17,14 @@ public final class ShadowEntity extends OtherClientPlayerEntity {
         this.delayedMotion = delayedMotion;
         this.noClip = true;
         this.setNoGravity(true);
-        this.lastPlayerPos = getPos();
+        this.lastPlayerPos = getEntityPos();
     }
 
     public void horrorTick(ClientPlayerEntity player) {
         Vec3d target = player.getEyePos();
         if (delayedMotion) {
             // The doppelganger copies the player's movement with a small delay.
-            Vec3d currentPlayer = player.getPos();
+            Vec3d currentPlayer = player.getEntityPos();
             Vec3d old = lastPlayerPos;
             lastPlayerPos = currentPlayer;
             double dx = old.x - getX();
