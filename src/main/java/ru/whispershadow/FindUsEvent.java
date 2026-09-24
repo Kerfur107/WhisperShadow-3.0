@@ -378,12 +378,11 @@ public final class FindUsEvent {
          * Make the figure slowly face the player.
          */
         shadow.lookAt(
-                net.minecraft.entity.ai.TargetPredicate.createAttackable(),
-                client.player.getX(),
-                client.player.getY() +
-                        client.player.getStandingEyeHeight(),
-                client.player.getZ()
-        );
+        TargetPredicate.DEFAULT,
+        client.player.getX(),
+        client.player.getY(),
+        client.player.getZ()
+);
 
         /*
          * Check whether the player is looking
