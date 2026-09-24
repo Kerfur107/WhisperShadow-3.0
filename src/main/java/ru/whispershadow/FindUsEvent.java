@@ -374,15 +374,8 @@ public final class FindUsEvent {
                 shadow == null)
             return;
 
-        /*
-         * Make the figure slowly face the player.
-         */
-        shadow.lookAt(
-        TargetPredicate.DEFAULT,
-        client.player.getX(),
-        client.player.getY(),
-        client.player.getZ()
-);
+
+
 
         /*
          * Check whether the player is looking
