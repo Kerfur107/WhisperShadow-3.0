@@ -804,6 +804,7 @@ public final class HorrorManager {
                         false
                 );
 
+        // Только один ID для chase-сущности.
         entity.setId(
                 -800000 -
                         RANDOM.nextInt(100000)
@@ -816,11 +817,6 @@ public final class HorrorManager {
                 client.player.getYaw(),
                 0.0f
         );
-
-        entity.setId(
-        -700000 -
-                RANDOM.nextInt(100000)
-);
 
         entity.setNoGravity(true);
         entity.setInvisible(false);
@@ -1105,13 +1101,24 @@ public final class HorrorManager {
     }
 
     // SPAWN SHADOW
-    public static void spawnFigure(MinecraftClient client) {
-    spawnFigure(client, 0);
-}
+    public static void spawnFigure(
+            MinecraftClient client
+    ) {
+
+        spawnFigure(
+                client,
+                0
+        );
+    }
+
     private static void spawnFigure(
             MinecraftClient client,
             int level
     ) {
+
+        if (client.player == null ||
+                client.world == null)
+            return;
 
         double angle;
         double distance;
@@ -1168,6 +1175,13 @@ public final class HorrorManager {
                 z,
                 RANDOM.nextFloat() * 360.0f,
                 0.0f
+        );
+
+        // Нужен уникальный client-side ID,
+        // чтобы сущность корректно существовала в ClientWorld.
+        entity.setId(
+                -700000 -
+                        RANDOM.nextInt(100000)
         );
 
         entity.setNoGravity(true);
