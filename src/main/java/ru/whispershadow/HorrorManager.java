@@ -817,6 +817,11 @@ public final class HorrorManager {
                 0.0f
         );
 
+        entity.setId(
+        -700000 -
+                RANDOM.nextInt(100000)
+);
+
         entity.setNoGravity(true);
         entity.setInvisible(false);
 
