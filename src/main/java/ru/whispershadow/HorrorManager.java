@@ -4,8 +4,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -212,9 +210,6 @@ public final class HorrorManager {
     private static final int RUN_DURATION_TICKS = 20 * 20;
     private static final int CHASE_SOUND_TICKS = 20 * 20;
     private static int chaseSoundTicks = 0;
-
-    // Конкретный экземпляр музыки погони.
-    private static SoundInstance chaseSoundInstance = null;
 
     // Player skin
     private static com.mojang.authlib.GameProfile getRandomPlayerProfile(
@@ -881,18 +876,12 @@ public final class HorrorManager {
         if (client.player == null)
             return;
 
-        // Останавливаем старый экземпляр перед запуском нового.
         stopChaseSound(client);
 
-        chaseSoundInstance =
-                PositionedSoundInstance.master(
-                        ModSounds.CIRCUIT_CHASE,
-                        1.0f,
-                        1.0f
-                );
-
-        client.getSoundManager().play(
-                chaseSoundInstance
+        client.player.playSound(
+                ModSounds.CIRCUIT_CHASE,
+                1.0f,
+                1.0f
         );
 
         chaseSoundTicks =
@@ -903,16 +892,6 @@ public final class HorrorManager {
             MinecraftClient client
     ) {
 
-        if (chaseSoundInstance != null) {
-
-            client.getSoundManager().stop(
-                    chaseSoundInstance
-            );
-
-            chaseSoundInstance = null;
-        }
-
-        // Дополнительная страховка от старых экземпляров.
         client.getSoundManager().stopSounds(
                 ModSounds.CIRCUIT_CHASE_ID,
                 null
