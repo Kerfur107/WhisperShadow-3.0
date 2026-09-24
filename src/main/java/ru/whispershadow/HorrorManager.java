@@ -22,7 +22,7 @@ import java.util.Map;
 
 public final class HorrorManager {
 
-```
+
 private static final Random RANDOM =
         new Random();
 
@@ -2372,6 +2372,6 @@ private static void renderVhs(
         );
     }
 }
-```
+
 
 }
