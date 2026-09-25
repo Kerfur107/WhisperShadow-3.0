@@ -2673,6 +2673,9 @@ public final class HorrorManager {
             DrawContext context,
             RenderTickCounter tickCounter
     ) {
+        if (WatcherEvent.isActive()) {
+    WatcherEvent.renderOverlay(context);
+}
 
         /*
          * Во время Watcher старые визуальные эффекты
