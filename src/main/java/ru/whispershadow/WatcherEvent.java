@@ -2,8 +2,6 @@ package ru.whispershadow;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -162,7 +160,7 @@ public final class WatcherEvent {
                     ticks = 0;
                     stage = 7;
 
-                    removeWatchers(client);
+                    removeWatchers();
                 }
             }
 
@@ -186,7 +184,7 @@ public final class WatcherEvent {
                     ticks = 0;
                     stage = 9;
 
-                    removeWatchers(client);
+                    removeWatchers();
                 }
             }
 
@@ -252,10 +250,7 @@ public final class WatcherEvent {
 
         watcher.setInvisible(false);
 
-        client.world.addEntity(
-                watcher.getId(),
-                watcher
-        );
+        client.world.addEntity(watcher);
 
         watchers.add(watcher);
     }
@@ -290,10 +285,7 @@ public final class WatcherEvent {
 
             watcher.setInvisible(false);
 
-            client.world.addEntity(
-                    watcher.getId(),
-                    watcher
-            );
+            client.world.addEntity(watcher);
 
             watchers.add(watcher);
         }
@@ -313,10 +305,10 @@ public final class WatcherEvent {
             return;
 
         Vec3d playerPos =
-                client.player.getPos();
+                client.player.getEntityPos();
 
         Vec3d watcherPos =
-                watcher.getPos();
+                watcher.getEntityPos();
 
         double distance =
                 playerPos.distanceTo(
@@ -367,9 +359,7 @@ public final class WatcherEvent {
         );
     }
 
-    private static void removeWatchers(
-            MinecraftClient client
-    ) {
+    private static void removeWatchers() {
 
         for (ArmorStandEntity watcher :
                 watchers) {
@@ -403,7 +393,7 @@ public final class WatcherEvent {
             MinecraftClient client
     ) {
 
-        removeWatchers(client);
+        removeWatchers();
 
         active = false;
         stage = 0;
