@@ -1704,7 +1704,7 @@ private static void stopChase(
     }
 
     
-private static void fireBrokenScript(
+public static void fireBrokenScript(
         MinecraftClient client
 ) {
 
