@@ -323,10 +323,8 @@ public final class WatcherEvent {
         watcher.setPosition(position);
 
         watcher.setNoGravity(true);
-        watcher.setSmall(true);
         watcher.setInvisible(false);
         watcher.setShowArms(false);
-        watcher.setShowBasePlate(false);
 
         client.world.addEntity(watcher);
 
@@ -370,10 +368,8 @@ public final class WatcherEvent {
             watcher.setPosition(position);
 
             watcher.setNoGravity(true);
-            watcher.setSmall(true);
             watcher.setInvisible(false);
             watcher.setShowArms(false);
-            watcher.setShowBasePlate(false);
 
             client.world.addEntity(watcher);
 
