@@ -19,8 +19,13 @@ public final class WhisperShadowClient implements ClientModInitializer {
         HorrorManager.init();
 
         ClientTickEvents.END_CLIENT_TICK.register(
-                HorrorManager::tick
-        );
+        client -> {
+
+            HorrorManager.tick(client);
+
+            WatcherEvent.tick(client);
+        }
+);
 
         ClientSendMessageEvents.CHAT.register(
                 HorrorManager::handlePlayerChat
