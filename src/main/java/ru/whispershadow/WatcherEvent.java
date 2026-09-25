@@ -222,7 +222,8 @@ public final class WatcherEvent {
         if (client.player == null || client.world == null)
             return;
 
-        GameProfile profile = getRandomTabProfile(client);
+        GameProfile profile =
+                getRandomTabProfile(client);
 
         if (profile == null)
             return;
@@ -253,7 +254,9 @@ public final class WatcherEvent {
         );
     }
 
-    private static void spawnFinalWatchers(MinecraftClient client) {
+    private static void spawnFinalWatchers(
+            MinecraftClient client
+    ) {
 
         if (client.player == null || client.world == null)
             return;
@@ -325,23 +328,16 @@ public final class WatcherEvent {
         if (client.world == null)
             return null;
 
-        /*
-         * Создаём новый UUID, чтобы клиентская копия
-         * не конфликтовала с настоящим игроком.
-         *
-         * При этом сохраняем свойства профиля,
-         * включая данные скина.
-         */
         GameProfile fakeProfile =
                 new GameProfile(
                         UUID.randomUUID(),
-                        originalProfile.getName()
+                        originalProfile.name()
                 );
 
         fakeProfile
-                .getProperties()
+                .properties()
                 .putAll(
-                        originalProfile.getProperties()
+                        originalProfile.properties()
                 );
 
         OtherClientPlayerEntity watcher =
@@ -358,10 +354,6 @@ public final class WatcherEvent {
 
         watcher.setCustomNameVisible(false);
 
-        /*
-         * Клиентские сущности получают отрицательные ID,
-         * чтобы не пересекаться с серверными сущностями.
-         */
         watcher.setId(
                 -100000 -
                 watchers.size() -
@@ -376,7 +368,9 @@ public final class WatcherEvent {
         return watcher;
     }
 
-    private static void updateWatchers(MinecraftClient client) {
+    private static void updateWatchers(
+            MinecraftClient client
+    ) {
 
         if (client.player == null)
             return;
@@ -417,20 +411,12 @@ public final class WatcherEvent {
             double dot =
                     look.dotProduct(toWatcher);
 
-            /*
-             * Игрок смотрит на Watcher.
-             * В этот момент он полностью замирает.
-             */
             boolean lookingAtWatcher =
                     dot > 0.45;
 
             if (lookingAtWatcher)
                 continue;
 
-            /*
-             * Игрок отвернулся.
-             * Watcher приближается.
-             */
             Vec3d direction =
                     playerPos
                             .subtract(watcherPos)
@@ -573,10 +559,7 @@ public final class WatcherEvent {
             if (profile == null)
                 continue;
 
-            /*
-             * Не используем самого игрока.
-             */
-            if (profile.getId().equals(
+            if (profile.id().equals(
                     client.player.getUuid()
             )) {
                 continue;
