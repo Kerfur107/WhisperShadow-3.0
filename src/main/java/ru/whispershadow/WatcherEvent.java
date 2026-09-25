@@ -3,7 +3,6 @@ package ru.whispershadow;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.text.Text;
@@ -28,7 +27,7 @@ public final class WatcherEvent {
     private static final List<ArmorStandEntity> watchers =
             new ArrayList<>();
 
-    private static WatcherEvent() {}
+    private WatcherEvent() {}
 
     // ========================================
     // START
@@ -517,11 +516,10 @@ public final class WatcherEvent {
         if (client.player == null)
             return;
 
-        client.getSoundManager().play(
-                PositionedSoundInstance.master(
-                        ModSounds.WATCHER_STATIC,
-                        0.18f
-                )
+        client.player.playSound(
+                ModSounds.WATCHER_STATIC,
+                0.18f,
+                1.0f
         );
     }
 
@@ -536,11 +534,10 @@ public final class WatcherEvent {
         if (client.player == null)
             return;
 
-        client.getSoundManager().play(
-                PositionedSoundInstance.master(
-                        ModSounds.WATCHER_STING,
-                        0.75f
-                )
+        client.player.playSound(
+                ModSounds.WATCHER_STING,
+                0.75f,
+                1.0f
         );
     }
 
