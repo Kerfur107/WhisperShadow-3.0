@@ -1,8 +1,9 @@
 package ru.whispershadow;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.text.Text;
@@ -27,7 +28,7 @@ public final class WatcherEvent {
     private static final List<ArmorStandEntity> watchers =
             new ArrayList<>();
 
-    private WatcherEvent() {}
+    private static WatcherEvent() {}
 
     // ========================================
     // START
@@ -45,6 +46,7 @@ public final class WatcherEvent {
             return;
 
         active = true;
+
         stage = 0;
         ticks = 0;
 
@@ -54,7 +56,13 @@ public final class WatcherEvent {
                         .getString();
 
         watchers.clear();
+
+        playStatic(client);
     }
+
+    // ========================================
+    // STATE
+    // ========================================
 
     public static boolean isActive() {
         return active;
@@ -82,13 +90,11 @@ public final class WatcherEvent {
 
         switch (stage) {
 
-            // --------------------------------
+            // ========================================
             // SILENCE
-            // --------------------------------
+            // ========================================
 
             case 0 -> {
-
-                // 5 секунд полной тишины
 
                 if (ticks >= 100) {
 
@@ -97,16 +103,14 @@ public final class WatcherEvent {
 
                     sendMessage(
                             client,
-                            "Hello, " +
-                                    playerName +
-                                    "."
+                            "Hello, " + playerName + "."
                     );
                 }
             }
 
-            // --------------------------------
-            // FIRST MESSAGE
-            // --------------------------------
+            // ========================================
+            // MESSAGE 2
+            // ========================================
 
             case 1 -> {
 
@@ -122,9 +126,9 @@ public final class WatcherEvent {
                 }
             }
 
-            // --------------------------------
-            // SECOND MESSAGE
-            // --------------------------------
+            // ========================================
+            // MESSAGE 3
+            // ========================================
 
             case 2 -> {
 
@@ -140,9 +144,9 @@ public final class WatcherEvent {
                 }
             }
 
-            // --------------------------------
-            // LOOK BEHIND YOU
-            // --------------------------------
+            // ========================================
+            // MESSAGE 4
+            // ========================================
 
             case 3 -> {
 
@@ -158,9 +162,9 @@ public final class WatcherEvent {
                 }
             }
 
-            // --------------------------------
-            // WAIT
-            // --------------------------------
+            // ========================================
+            // FIRST WATCHER
+            // ========================================
 
             case 4 -> {
 
@@ -173,30 +177,16 @@ public final class WatcherEvent {
                 }
             }
 
-            // --------------------------------
-            // WATCHER
-            // --------------------------------
+            // ========================================
+            // FIRST WATCHER MOVEMENT
+            // ========================================
 
             case 5 -> {
 
-                /*
-                 * Фигура существует некоторое время.
-                 *
-                 * Если игрок смотрит на неё —
-                 * она НЕ двигается.
-                 *
-                 * Если игрок отворачивается —
-                 * она приближается.
-                 */
-
                 if (ticks % 10 == 0) {
 
-                    updateWatcher(
-                            client
-                    );
+                    updateWatcher(client);
                 }
-
-                // Через 12 секунд исчезает
 
                 if (ticks >= 240) {
 
@@ -207,9 +197,9 @@ public final class WatcherEvent {
                 }
             }
 
-            // --------------------------------
-            // SILENCE AFTER FIRST FIGURE
-            // --------------------------------
+            // ========================================
+            // FINAL WATCHERS
+            // ========================================
 
             case 6 -> {
 
@@ -218,24 +208,17 @@ public final class WatcherEvent {
                     ticks = 0;
                     stage = 7;
 
-                    spawnFinalWatchers(
-                            client
-                    );
+                    playSting(client);
+
+                    spawnFinalWatchers(client);
                 }
             }
 
-            // --------------------------------
-            // FINAL FIGURES
-            // --------------------------------
+            // ========================================
+            // FINAL WATCHERS ACTIVE
+            // ========================================
 
             case 7 -> {
-
-                /*
-                 * Последняя сцена.
-                 *
-                 * От 1 до 5 фигур.
-                 * Они просто стоят.
-                 */
 
                 if (ticks >= 150) {
 
@@ -246,9 +229,9 @@ public final class WatcherEvent {
                 }
             }
 
-            // --------------------------------
-            // FINAL SILENCE
-            // --------------------------------
+            // ========================================
+            // FINAL MESSAGE 1
+            // ========================================
 
             case 8 -> {
 
@@ -264,9 +247,9 @@ public final class WatcherEvent {
                 }
             }
 
-            // --------------------------------
-            // FINAL LINE
-            // --------------------------------
+            // ========================================
+            // FINAL MESSAGE 2
+            // ========================================
 
             case 9 -> {
 
@@ -282,9 +265,9 @@ public final class WatcherEvent {
                 }
             }
 
-            // --------------------------------
+            // ========================================
             // END
-            // --------------------------------
+            // ========================================
 
             case 10 -> {
 
@@ -321,7 +304,6 @@ public final class WatcherEvent {
                 );
 
         watcher.setPosition(position);
-
         watcher.setNoGravity(true);
         watcher.setInvisible(false);
         watcher.setShowArms(false);
@@ -350,8 +332,8 @@ public final class WatcherEvent {
 
             double distance =
                     16.0 +
-                            RANDOM.nextDouble()
-                                    * 16.0;
+                            RANDOM.nextDouble() *
+                                    16.0;
 
             Vec3d position =
                     getWatcherPosition(
@@ -366,7 +348,6 @@ public final class WatcherEvent {
                     );
 
             watcher.setPosition(position);
-
             watcher.setNoGravity(true);
             watcher.setInvisible(false);
             watcher.setShowArms(false);
@@ -406,22 +387,13 @@ public final class WatcherEvent {
                         watcherPos
                 );
 
-        /*
-         * Если фигура уже очень близко —
-         * дальше не двигаем.
-         */
-
         if (distance <= 4.5)
             return;
 
-        /*
-         * Проверяем направление взгляда игрока.
-         */
-
         Vec3d look =
-                client.player.getRotationVec(
-                        1.0f
-                ).normalize();
+                client.player
+                        .getRotationVec(1.0f)
+                        .normalize();
 
         Vec3d toWatcher =
                 watcherPos
@@ -433,25 +405,11 @@ public final class WatcherEvent {
                         toWatcher
                 );
 
-        /*
-         * Чем меньше dot, тем сильнее
-         * игрок отвернулся.
-         *
-         * > 0.45 = игрок смотрит примерно
-         * на фигуру.
-         */
-
         boolean lookingAtWatcher =
                 dot > 0.45;
 
         if (lookingAtWatcher)
             return;
-
-        /*
-         * Игрок отвернулся.
-         *
-         * Фигура делает один шаг ближе.
-         */
 
         Vec3d direction =
                 playerPos
@@ -460,7 +418,8 @@ public final class WatcherEvent {
 
         double step =
                 1.8 +
-                        RANDOM.nextDouble() * 0.8;
+                        RANDOM.nextDouble() *
+                                0.8;
 
         Vec3d newPosition =
                 watcherPos.add(
@@ -485,19 +444,19 @@ public final class WatcherEvent {
                 client.player;
 
         double angle =
-                RANDOM.nextDouble()
-                        * Math.PI
-                        * 2.0;
+                RANDOM.nextDouble() *
+                        Math.PI *
+                        2.0;
 
         double x =
                 player.getX() +
-                        Math.cos(angle)
-                                * distance;
+                        Math.cos(angle) *
+                                distance;
 
         double z =
                 player.getZ() +
-                        Math.sin(angle)
-                                * distance;
+                        Math.sin(angle) *
+                                distance;
 
         return new Vec3d(
                 x,
@@ -507,7 +466,7 @@ public final class WatcherEvent {
     }
 
     // ========================================
-    // REMOVE
+    // REMOVE WATCHERS
     // ========================================
 
     private static void removeWatchers() {
@@ -518,7 +477,7 @@ public final class WatcherEvent {
             if (!watcher.isRemoved()) {
 
                 watcher.remove(
-                        Entity.RemovalReason.DISCARDED
+                        net.minecraft.entity.Entity.RemovalReason.DISCARDED
                 );
             }
         }
@@ -527,7 +486,7 @@ public final class WatcherEvent {
     }
 
     // ========================================
-    // CHAT
+    // MESSAGES
     // ========================================
 
     private static void sendMessage(
@@ -548,7 +507,253 @@ public final class WatcherEvent {
     }
 
     // ========================================
-    // STOP
+    // VHS SOUND
+    // ========================================
+
+    private static void playStatic(
+            MinecraftClient client
+    ) {
+
+        if (client.player == null)
+            return;
+
+        client.getSoundManager().play(
+                PositionedSoundInstance.master(
+                        ModSounds.WATCHER_STATIC,
+                        0.18f
+                )
+        );
+    }
+
+    // ========================================
+    // STING SOUND
+    // ========================================
+
+    private static void playSting(
+            MinecraftClient client
+    ) {
+
+        if (client.player == null)
+            return;
+
+        client.getSoundManager().play(
+                PositionedSoundInstance.master(
+                        ModSounds.WATCHER_STING,
+                        0.75f
+                )
+        );
+    }
+
+    // ========================================
+    // STOP SOUNDS
+    // ========================================
+
+    private static void stopSounds(
+            MinecraftClient client
+    ) {
+
+        client.getSoundManager().stopSounds(
+                ModSounds.WATCHER_STATIC_ID,
+                null
+        );
+
+        client.getSoundManager().stopSounds(
+                ModSounds.WATCHER_STING_ID,
+                null
+        );
+    }
+
+    // ========================================
+    // VHS / CRT OVERLAY
+    // ========================================
+
+    public static void renderOverlay(
+            DrawContext context
+    ) {
+
+        if (!active)
+            return;
+
+        int width =
+                context.getScaledWindowWidth();
+
+        int height =
+                context.getScaledWindowHeight();
+
+        float intensity =
+                getEffectIntensity();
+
+        // ========================================
+        // DARK SCREEN
+        // ========================================
+
+        int darkness =
+                (int)
+                        (intensity * 18.0f);
+
+        if (darkness > 0) {
+
+            context.fill(
+                    0,
+                    0,
+                    width,
+                    height,
+                    (darkness << 24)
+            );
+        }
+
+        // ========================================
+        // CRT SCANLINES
+        // ========================================
+
+        int lineAlpha =
+                (int)
+                        (18.0f +
+                                intensity *
+                                        25.0f);
+
+        int lineColor =
+                (lineAlpha << 24);
+
+        int spacing = 3;
+
+        for (
+                int y = 0;
+                y < height;
+                y += spacing
+        ) {
+
+            context.fill(
+                    0,
+                    y,
+                    width,
+                    y + 1,
+                    lineColor
+            );
+        }
+
+        // ========================================
+        // RANDOM VHS DISTORTION
+        // ========================================
+
+        if (RANDOM.nextFloat() <
+                0.035f +
+                        intensity *
+                                0.08f) {
+
+            int bandHeight =
+                    2 +
+                            RANDOM.nextInt(
+                                    Math.max(
+                                            3,
+                                            height / 18
+                                    )
+                            );
+
+            int y =
+                    RANDOM.nextInt(
+                            Math.max(
+                                    1,
+                                    height -
+                                            bandHeight
+                            )
+                    );
+
+            int alpha =
+                    (int)
+                            (20 +
+                                    intensity *
+                                            35);
+
+            context.fill(
+                    0,
+                    y,
+                    width,
+                    y + bandHeight,
+                    (alpha << 24)
+            );
+        }
+
+        // ========================================
+        // EDGE VIGNETTE
+        // ========================================
+
+        int edgeAlpha =
+                (int)
+                        (10 +
+                                intensity *
+                                        28);
+
+        int edgeColor =
+                (edgeAlpha << 24);
+
+        int edgeSize =
+                Math.max(
+                        8,
+                        (int)
+                                (width *
+                                        0.025f)
+                );
+
+        context.fill(
+                0,
+                0,
+                edgeSize,
+                height,
+                edgeColor
+        );
+
+        context.fill(
+                width - edgeSize,
+                0,
+                width,
+                height,
+                edgeColor
+        );
+
+        context.fill(
+                0,
+                0,
+                width,
+                edgeSize,
+                edgeColor
+        );
+
+        context.fill(
+                0,
+                height - edgeSize,
+                width,
+                height,
+                edgeColor
+        );
+    }
+
+    // ========================================
+    // EFFECT INTENSITY
+    // ========================================
+
+    private static float getEffectIntensity() {
+
+        if (stage <= 3)
+            return 0.15f;
+
+        if (stage == 4)
+            return 0.25f;
+
+        if (stage == 5)
+            return 0.35f;
+
+        if (stage == 6)
+            return 0.55f;
+
+        if (stage == 7)
+            return 0.75f;
+
+        return 0.45f;
+    }
+
+    // ========================================
+    // STOP EVENT
     // ========================================
 
     private static void stop(
@@ -557,8 +762,12 @@ public final class WatcherEvent {
 
         removeWatchers();
 
+        stopSounds(client);
+
         active = false;
+
         stage = 0;
+
         ticks = 0;
 
         playerName = null;
