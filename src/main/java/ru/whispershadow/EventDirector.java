@@ -354,7 +354,10 @@ public final class EventDirector {
                     HorrorManager.fireRun(
                             client
                     );
-
+            case BROKEN_SCRIPT ->
+                    HorrorManager.fireBrokenScript(
+                            client
+                    );
             case DONT_MOVE ->
                     HorrorManager.fireDontMove(
                             client
@@ -397,6 +400,7 @@ public final class EventDirector {
         FIGURE,
         DECOY,
         VHS,
+        BROKEN_SCRIPT,
 
         TAB_MESSAGE,
         EYES,
