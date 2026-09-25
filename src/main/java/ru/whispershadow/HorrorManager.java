@@ -454,7 +454,13 @@ private static int playerChatGlitchCooldown = 0;
     private static boolean runActive = false;
     private static int runTicks = 0;
     private static final int RUN_DURATION_TICKS = 20 * 20;
-    
+
+    private static boolean brokenScriptActive = false;
+private static int brokenScriptStage = 0;
+private static int brokenScriptTicks = 0;
+private static int brokenScriptCooldown = 0;
+
+private static String brokenScriptPlayer = null;
     // Player skin
     private static com.mojang.authlib.GameProfile getRandomPlayerProfile(
             MinecraftClient client
@@ -811,6 +817,12 @@ private static int playerChatGlitchCooldown = 0;
 if (playerChatGlitchCooldown > 0)
     playerChatGlitchCooldown--;
 
+        if (brokenScriptCooldown > 0)
+    brokenScriptCooldown--;
+
+if (brokenScriptActive)
+    tickBrokenScript(client);
+        
 if (playerChatCooldown <= 0) {
 
     if (RANDOM.nextInt(1000) < 2) {
@@ -1691,6 +1703,273 @@ private static void stopChase(
         );
     }
 
+    
+private static void fireBrokenScript(
+        MinecraftClient client
+) {
+
+    if (client.player == null ||
+            client.world == null)
+        return;
+
+    if (brokenScriptActive)
+        return;
+
+    if (runActive)
+        return;
+
+    List<PlayerListEntry> players =
+            new ArrayList<>(
+                    client.player.networkHandler
+                            .getPlayerList()
+            );
+
+    players.removeIf(entry ->
+            entry.getProfile() == null ||
+                    entry.getProfile().name() == null
+    );
+
+    if (players.isEmpty())
+        return;
+
+    PlayerListEntry entry =
+            players.get(
+                    RANDOM.nextInt(
+                            players.size()
+                    )
+            );
+
+    brokenScriptPlayer =
+            entry.getProfile().name();
+
+    brokenScriptActive = true;
+    brokenScriptStage = 0;
+    brokenScriptTicks = 0;
+
+    client.player.sendMessage(
+            Text.literal(
+                    brokenScriptPlayer +
+                            " joined the game"
+            ).formatted(
+                    Formatting.GRAY
+            ),
+            false
+    );
+}
+
+    
+    private static void tickBrokenScript(
+        MinecraftClient client
+) {
+
+    if (client.player == null ||
+            client.world == null) {
+
+        stopBrokenScript();
+        return;
+    }
+
+    brokenScriptTicks++;
+
+    switch (brokenScriptStage) {
+
+        case 0 -> {
+
+            if (brokenScriptTicks >= 60) {
+
+                brokenScriptTicks = 0;
+                brokenScriptStage = 1;
+
+                sendBrokenChat(
+                        client,
+                        brokenScriptPlayer +
+                                ": can you see this?"
+                );
+            }
+        }
+
+        case 1 -> {
+
+            if (brokenScriptTicks >= 45) {
+
+                brokenScriptTicks = 0;
+                brokenScriptStage = 2;
+
+                sendBrokenChat(
+                        client,
+                        brokenScriptPlayer +
+                                ": can y█u s██ th██?"
+                );
+
+                client.player.playSound(
+                        ModSounds.GLITCH,
+                        0.12f,
+                        0.70f +
+                                RANDOM.nextFloat() * 0.25f
+                );
+            }
+        }
+
+        case 2 -> {
+
+            if (brokenScriptTicks >= 50) {
+
+                brokenScriptTicks = 0;
+                brokenScriptStage = 3;
+
+                sendBrokenChat(
+                        client,
+                        brokenScriptPlayer +
+                                " left the game"
+                );
+            }
+        }
+
+        case 3 -> {
+
+            if (brokenScriptTicks >= 35) {
+
+                brokenScriptTicks = 0;
+                brokenScriptStage = 4;
+
+                sendBrokenChat(
+                        client,
+                        brokenScriptPlayer +
+                                ": █████████"
+                );
+
+                client.player.playSound(
+                        ModSounds.GLITCH,
+                        0.18f,
+                        0.55f
+                );
+
+                fireDirectorGlitch();
+            }
+        }
+
+        case 4 -> {
+
+            if (brokenScriptTicks >= 50) {
+
+                brokenScriptTicks = 0;
+                brokenScriptStage = 5;
+
+                sendBrokenChat(
+                        client,
+                        brokenScriptPlayer +
+                                ": RUN"
+                );
+            }
+        }
+
+        case 5 -> {
+
+            if (brokenScriptTicks >= 25) {
+
+                brokenScriptTicks = 0;
+                brokenScriptStage = 6;
+
+                fireRun(client);
+            }
+        }
+
+        case 6 -> {
+
+            if (!runActive) {
+
+                brokenScriptTicks = 0;
+                brokenScriptStage = 7;
+            }
+        }
+
+        case 7 -> {
+
+            if (brokenScriptTicks >= 40) {
+
+                sendBrokenChat(
+                        client,
+                        brokenScriptPlayer +
+                                ": did you see that?"
+                );
+
+                InsanityManager.add(
+                        3.0f +
+                                RANDOM.nextFloat() * 3.0f
+                );
+
+                stopBrokenScript();
+            }
+        }
+    }
+}
+
+    private static void sendBrokenChat(
+        MinecraftClient client,
+        String message
+) {
+
+    if (client.player == null)
+        return;
+
+    MutableText text =
+            Text.literal(message);
+
+    int roll =
+            RANDOM.nextInt(100);
+
+    if (roll < 15) {
+
+        text = glitchText(message)
+                .formatted(
+                        Formatting.DARK_RED
+                );
+
+    } else if (roll < 30) {
+
+        text.formatted(
+                Formatting.RED
+        );
+
+    } else if (roll < 45) {
+
+        text.formatted(
+                Formatting.DARK_PURPLE
+        );
+
+    } else if (roll < 60) {
+
+        text.formatted(
+                Formatting.DARK_GRAY
+        );
+
+    } else {
+
+        text.formatted(
+                Formatting.WHITE
+        );
+    }
+
+    client.player.sendMessage(
+            text,
+            false
+    );
+}
+
+    private static void stopBrokenScript() {
+
+    brokenScriptActive = false;
+    brokenScriptStage = 0;
+    brokenScriptTicks = 0;
+    brokenScriptPlayer = null;
+
+    brokenScriptCooldown =
+            20 * (
+                    8 +
+                            RANDOM.nextInt(13)
+            );
+}
+    
     // FAKE PLAYER CHAT
 private static void firePlayerChat(
         MinecraftClient client
