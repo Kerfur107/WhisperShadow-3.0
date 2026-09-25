@@ -209,7 +209,6 @@ public final class HorrorManager {
     private static int runTicks = 0;
     private static final int RUN_DURATION_TICKS = 20 * 20;
     private static final int CHASE_SOUND_TICKS = 20 * 20;
-    private static int chaseSoundTicks = 0;
 
     // Player skin
     private static com.mojang.authlib.GameProfile getRandomPlayerProfile(
@@ -657,15 +656,9 @@ public final class HorrorManager {
 
         if (runActive) {
 
-            runTicks--;
+    runTicks--;
 
-            if (chaseSoundTicks > 0)
-                chaseSoundTicks--;
-
-            if (chaseSoundTicks <= 0)
-                playChaseSound(client);
-
-            if (figure != null) {
+    if (figure != null) {
 
                 figure.chasePlayer(
                         client.player
@@ -767,48 +760,48 @@ public final class HorrorManager {
 
     // RUN EVENT
     public static void fireRun(
-            MinecraftClient client
-    ) {
+        MinecraftClient client
+) {
 
-        if (client.player == null ||
-                client.world == null)
-            return;
+    if (client.player == null ||
+            client.world == null)
+        return;
 
-        if (runActive)
-            return;
+    if (runActive)
+        return;
 
-        if (dontMoveActive) {
-            dontMoveActive = false;
-            dontMoveTicks = 0;
-        }
-
-        runActive = true;
-        runTicks = RUN_DURATION_TICKS;
-        chaseSoundTicks = 0;
-
-        removeFigure(client);
-
-        spawnChaseFigure(client);
-
-        client.player.sendMessage(
-                Text.literal("RUN.")
-                        .formatted(
-                                Formatting.DARK_RED,
-                                Formatting.BOLD
-                        ),
-                false
-        );
-
-        fireDirectorGlitch();
-
-        playChaseSound(client);
-
-        InsanityManager.add(
-                8.0f +
-                        RANDOM.nextFloat() * 5.0f
-        );
+    if (dontMoveActive) {
+        dontMoveActive = false;
+        dontMoveTicks = 0;
     }
 
+    runActive = true;
+    runTicks = RUN_DURATION_TICKS;
+
+    removeFigure(client);
+
+    spawnChaseFigure(client);
+
+    client.player.sendMessage(
+            Text.literal("RUN.")
+                    .formatted(
+                            Formatting.DARK_RED,
+                            Formatting.BOLD
+                    ),
+            false
+    );
+
+    fireDirectorGlitch();
+
+    playChaseSound(client);
+
+    InsanityManager.add(
+            8.0f +
+                    RANDOM.nextFloat() * 5.0f
+    );
+}
+
+    
     private static void spawnChaseFigure(
             MinecraftClient client
     ) {
@@ -870,45 +863,38 @@ public final class HorrorManager {
 
     // CHASE MUSIC
     private static void playChaseSound(
-            MinecraftClient client
-    ) {
+        MinecraftClient client
+) {
 
-        if (client.player == null)
-            return;
+    if (client.player == null)
+        return;
 
-        stopChaseSound(client);
+    client.player.playSound(
+            ModSounds.CIRCUIT_CHASE,
+            1.0f,
+            1.0f
+    );
+}
 
-        client.player.playSound(
-                ModSounds.CIRCUIT_CHASE,
-                1.0f,
-                1.0f
-        );
+private static void stopChaseSound(
+        MinecraftClient client
+) {
 
-        chaseSoundTicks =
-                CHASE_SOUND_TICKS;
-    }
+    client.getSoundManager().stopSounds(
+            ModSounds.CIRCUIT_CHASE_ID,
+            null
+    );
+}
 
-    private static void stopChaseSound(
-            MinecraftClient client
-    ) {
+private static void stopChase(
+        MinecraftClient client
+) {
 
-        client.getSoundManager().stopSounds(
-                ModSounds.CIRCUIT_CHASE_ID,
-                null
-        );
+    runActive = false;
+    runTicks = 0;
 
-        chaseSoundTicks = 0;
-    }
-
-    private static void stopChase(
-            MinecraftClient client
-    ) {
-
-        runActive = false;
-        runTicks = 0;
-
-        stopChaseSound(client);
-    }
+    stopChaseSound(client);
+}
 
     // DON'T MOVE EVENT
     public static void fireDontMove(
