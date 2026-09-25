@@ -29,6 +29,10 @@ public final class WatcherEvent {
 
     private WatcherEvent() {}
 
+    // ========================================
+    // START
+    // ========================================
+
     public static void fire(
             MinecraftClient client
     ) {
@@ -45,7 +49,9 @@ public final class WatcherEvent {
         ticks = 0;
 
         playerName =
-                client.player.getName().getString();
+                client.player
+                        .getName()
+                        .getString();
 
         watchers.clear();
     }
@@ -53,6 +59,10 @@ public final class WatcherEvent {
     public static boolean isActive() {
         return active;
     }
+
+    // ========================================
+    // TICK
+    // ========================================
 
     public static void tick(
             MinecraftClient client
@@ -72,7 +82,13 @@ public final class WatcherEvent {
 
         switch (stage) {
 
+            // --------------------------------
+            // SILENCE
+            // --------------------------------
+
             case 0 -> {
+
+                // 5 секунд полной тишины
 
                 if (ticks >= 100) {
 
@@ -88,9 +104,13 @@ public final class WatcherEvent {
                 }
             }
 
+            // --------------------------------
+            // FIRST MESSAGE
+            // --------------------------------
+
             case 1 -> {
 
-                if (ticks >= 50) {
+                if (ticks >= 55) {
 
                     ticks = 0;
                     stage = 2;
@@ -102,9 +122,13 @@ public final class WatcherEvent {
                 }
             }
 
+            // --------------------------------
+            // SECOND MESSAGE
+            // --------------------------------
+
             case 2 -> {
 
-                if (ticks >= 60) {
+                if (ticks >= 65) {
 
                     ticks = 0;
                     stage = 3;
@@ -116,9 +140,13 @@ public final class WatcherEvent {
                 }
             }
 
+            // --------------------------------
+            // LOOK BEHIND YOU
+            // --------------------------------
+
             case 3 -> {
 
-                if (ticks >= 70) {
+                if (ticks >= 80) {
 
                     ticks = 0;
                     stage = 4;
@@ -130,9 +158,13 @@ public final class WatcherEvent {
                 }
             }
 
+            // --------------------------------
+            // WAIT
+            // --------------------------------
+
             case 4 -> {
 
-                if (ticks >= 40) {
+                if (ticks >= 45) {
 
                     ticks = 0;
                     stage = 5;
@@ -141,35 +173,50 @@ public final class WatcherEvent {
                 }
             }
 
+            // --------------------------------
+            // WATCHER
+            // --------------------------------
+
             case 5 -> {
 
-                if (ticks >= 20) {
+                /*
+                 * Фигура существует некоторое время.
+                 *
+                 * Если игрок смотрит на неё —
+                 * она НЕ двигается.
+                 *
+                 * Если игрок отворачивается —
+                 * она приближается.
+                 */
 
-                    ticks = 0;
+                if (ticks % 10 == 0) {
 
-                    moveWatcherIfNeeded(
+                    updateWatcher(
                             client
                     );
                 }
-            }
 
-            case 6 -> {
+                // Через 12 секунд исчезает
 
-                if (ticks >= 80) {
+                if (ticks >= 240) {
 
                     ticks = 0;
-                    stage = 7;
+                    stage = 6;
 
                     removeWatchers();
                 }
             }
 
-            case 7 -> {
+            // --------------------------------
+            // SILENCE AFTER FIRST FIGURE
+            // --------------------------------
 
-                if (ticks >= 60) {
+            case 6 -> {
+
+                if (ticks >= 70) {
 
                     ticks = 0;
-                    stage = 8;
+                    stage = 7;
 
                     spawnFinalWatchers(
                             client
@@ -177,23 +224,38 @@ public final class WatcherEvent {
                 }
             }
 
-            case 8 -> {
+            // --------------------------------
+            // FINAL FIGURES
+            // --------------------------------
 
-                if (ticks >= 140) {
+            case 7 -> {
+
+                /*
+                 * Последняя сцена.
+                 *
+                 * От 1 до 5 фигур.
+                 * Они просто стоят.
+                 */
+
+                if (ticks >= 150) {
 
                     ticks = 0;
-                    stage = 9;
+                    stage = 8;
 
                     removeWatchers();
                 }
             }
 
-            case 9 -> {
+            // --------------------------------
+            // FINAL SILENCE
+            // --------------------------------
 
-                if (ticks >= 60) {
+            case 8 -> {
+
+                if (ticks >= 55) {
 
                     ticks = 0;
-                    stage = 10;
+                    stage = 9;
 
                     sendMessage(
                             client,
@@ -202,12 +264,16 @@ public final class WatcherEvent {
                 }
             }
 
-            case 10 -> {
+            // --------------------------------
+            // FINAL LINE
+            // --------------------------------
 
-                if (ticks >= 50) {
+            case 9 -> {
+
+                if (ticks >= 65) {
 
                     ticks = 0;
-                    stage = 11;
+                    stage = 10;
 
                     sendMessage(
                             client,
@@ -216,15 +282,23 @@ public final class WatcherEvent {
                 }
             }
 
-            case 11 -> {
+            // --------------------------------
+            // END
+            // --------------------------------
 
-                if (ticks >= 80) {
+            case 10 -> {
+
+                if (ticks >= 90) {
 
                     stop(client);
                 }
             }
         }
     }
+
+    // ========================================
+    // FIRST WATCHER
+    // ========================================
 
     private static void spawnFirstWatcher(
             MinecraftClient client
@@ -237,7 +311,7 @@ public final class WatcherEvent {
         Vec3d position =
                 getWatcherPosition(
                         client,
-                        28.0
+                        30.0
                 );
 
         ArmorStandEntity watcher =
@@ -248,12 +322,20 @@ public final class WatcherEvent {
 
         watcher.setPosition(position);
 
+        watcher.setNoGravity(true);
+        watcher.setSmall(true);
         watcher.setInvisible(false);
+        watcher.setShowArms(false);
+        watcher.setShowBasePlate(false);
 
         client.world.addEntity(watcher);
 
         watchers.add(watcher);
     }
+
+    // ========================================
+    // FINAL WATCHERS
+    // ========================================
 
     private static void spawnFinalWatchers(
             MinecraftClient client
@@ -268,11 +350,15 @@ public final class WatcherEvent {
 
         for (int i = 0; i < count; i++) {
 
+            double distance =
+                    16.0 +
+                            RANDOM.nextDouble()
+                                    * 16.0;
+
             Vec3d position =
                     getWatcherPosition(
                             client,
-                            18.0 +
-                                    RANDOM.nextDouble() * 18.0
+                            distance
                     );
 
             ArmorStandEntity watcher =
@@ -283,7 +369,11 @@ public final class WatcherEvent {
 
             watcher.setPosition(position);
 
+            watcher.setNoGravity(true);
+            watcher.setSmall(true);
             watcher.setInvisible(false);
+            watcher.setShowArms(false);
+            watcher.setShowBasePlate(false);
 
             client.world.addEntity(watcher);
 
@@ -291,17 +381,22 @@ public final class WatcherEvent {
         }
     }
 
-    private static void moveWatcherIfNeeded(
+    // ========================================
+    // WATCHER MOVEMENT
+    // ========================================
+
+    private static void updateWatcher(
             MinecraftClient client
     ) {
 
-        if (watchers.isEmpty())
+        if (client.player == null ||
+                watchers.isEmpty())
             return;
 
         ArmorStandEntity watcher =
                 watchers.get(0);
 
-        if (client.player == null)
+        if (watcher.isRemoved())
             return;
 
         Vec3d playerPos =
@@ -315,20 +410,75 @@ public final class WatcherEvent {
                         watcherPos
                 );
 
-        if (distance > 12.0) {
+        /*
+         * Если фигура уже очень близко —
+         * дальше не двигаем.
+         */
 
-            Vec3d direction =
-                    playerPos
-                            .subtract(watcherPos)
-                            .normalize();
+        if (distance <= 4.5)
+            return;
 
-            watcher.setPosition(
-                    watcherPos.add(
-                            direction.multiply(4.0)
-                    )
-            );
-        }
+        /*
+         * Проверяем направление взгляда игрока.
+         */
+
+        Vec3d look =
+                client.player.getRotationVec(
+                        1.0f
+                ).normalize();
+
+        Vec3d toWatcher =
+                watcherPos
+                        .subtract(playerPos)
+                        .normalize();
+
+        double dot =
+                look.dotProduct(
+                        toWatcher
+                );
+
+        /*
+         * Чем меньше dot, тем сильнее
+         * игрок отвернулся.
+         *
+         * > 0.45 = игрок смотрит примерно
+         * на фигуру.
+         */
+
+        boolean lookingAtWatcher =
+                dot > 0.45;
+
+        if (lookingAtWatcher)
+            return;
+
+        /*
+         * Игрок отвернулся.
+         *
+         * Фигура делает один шаг ближе.
+         */
+
+        Vec3d direction =
+                playerPos
+                        .subtract(watcherPos)
+                        .normalize();
+
+        double step =
+                1.8 +
+                        RANDOM.nextDouble() * 0.8;
+
+        Vec3d newPosition =
+                watcherPos.add(
+                        direction.multiply(step)
+                );
+
+        watcher.setPosition(
+                newPosition
+        );
     }
+
+    // ========================================
+    // POSITION
+    // ========================================
 
     private static Vec3d getWatcherPosition(
             MinecraftClient client,
@@ -340,7 +490,8 @@ public final class WatcherEvent {
 
         double angle =
                 RANDOM.nextDouble()
-                        * Math.PI * 2.0;
+                        * Math.PI
+                        * 2.0;
 
         double x =
                 player.getX() +
@@ -359,18 +510,29 @@ public final class WatcherEvent {
         );
     }
 
+    // ========================================
+    // REMOVE
+    // ========================================
+
     private static void removeWatchers() {
 
         for (ArmorStandEntity watcher :
                 watchers) {
 
-            watcher.remove(
-                    Entity.RemovalReason.DISCARDED
-            );
+            if (!watcher.isRemoved()) {
+
+                watcher.remove(
+                        Entity.RemovalReason.DISCARDED
+                );
+            }
         }
 
         watchers.clear();
     }
+
+    // ========================================
+    // CHAT
+    // ========================================
 
     private static void sendMessage(
             MinecraftClient client,
@@ -389,6 +551,10 @@ public final class WatcherEvent {
         );
     }
 
+    // ========================================
+    // STOP
+    // ========================================
+
     private static void stop(
             MinecraftClient client
     ) {
@@ -398,6 +564,7 @@ public final class WatcherEvent {
         active = false;
         stage = 0;
         ticks = 0;
+
         playerName = null;
     }
 }
