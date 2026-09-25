@@ -1,17 +1,21 @@
 package ru.whispershadow;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.OtherClientPlayerEntity;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 public final class WatcherEvent {
 
@@ -24,63 +28,40 @@ public final class WatcherEvent {
 
     private static String playerName = null;
 
-    private static final List<ArmorStandEntity> watchers =
+    private static final List<OtherClientPlayerEntity> watchers =
             new ArrayList<>();
 
     private WatcherEvent() {}
 
-    // ========================================
-    // START
-    // ========================================
+    public static void fire(MinecraftClient client) {
 
-    public static void fire(
-            MinecraftClient client
-    ) {
-
-        if (client.player == null ||
-                client.world == null)
+        if (client.player == null || client.world == null)
             return;
 
         if (active)
             return;
 
         active = true;
-
         stage = 0;
         ticks = 0;
 
-        playerName =
-                client.player
-                        .getName()
-                        .getString();
+        playerName = client.player.getName().getString();
 
         watchers.clear();
 
         playStatic(client);
     }
 
-    // ========================================
-    // STATE
-    // ========================================
-
     public static boolean isActive() {
         return active;
     }
 
-    // ========================================
-    // TICK
-    // ========================================
-
-    public static void tick(
-            MinecraftClient client
-    ) {
+    public static void tick(MinecraftClient client) {
 
         if (!active)
             return;
 
-        if (client.player == null ||
-                client.world == null) {
-
+        if (client.player == null || client.world == null) {
             stop(client);
             return;
         }
@@ -88,10 +69,6 @@ public final class WatcherEvent {
         ticks++;
 
         switch (stage) {
-
-            // ========================================
-            // SILENCE
-            // ========================================
 
             case 0 -> {
 
@@ -107,10 +84,6 @@ public final class WatcherEvent {
                 }
             }
 
-            // ========================================
-            // MESSAGE 2
-            // ========================================
-
             case 1 -> {
 
                 if (ticks >= 55) {
@@ -124,10 +97,6 @@ public final class WatcherEvent {
                     );
                 }
             }
-
-            // ========================================
-            // MESSAGE 3
-            // ========================================
 
             case 2 -> {
 
@@ -143,10 +112,6 @@ public final class WatcherEvent {
                 }
             }
 
-            // ========================================
-            // MESSAGE 4
-            // ========================================
-
             case 3 -> {
 
                 if (ticks >= 80) {
@@ -161,10 +126,6 @@ public final class WatcherEvent {
                 }
             }
 
-            // ========================================
-            // FIRST WATCHER
-            // ========================================
-
             case 4 -> {
 
                 if (ticks >= 45) {
@@ -176,15 +137,10 @@ public final class WatcherEvent {
                 }
             }
 
-            // ========================================
-            // FIRST WATCHER MOVEMENT
-            // ========================================
-
             case 5 -> {
 
-                if (ticks % 10 == 0) {
-
-                    updateWatcher(client);
+                if (ticks % 5 == 0) {
+                    updateWatchers(client);
                 }
 
                 if (ticks >= 240) {
@@ -195,10 +151,6 @@ public final class WatcherEvent {
                     removeWatchers();
                 }
             }
-
-            // ========================================
-            // FINAL WATCHERS
-            // ========================================
 
             case 6 -> {
 
@@ -213,11 +165,11 @@ public final class WatcherEvent {
                 }
             }
 
-            // ========================================
-            // FINAL WATCHERS ACTIVE
-            // ========================================
-
             case 7 -> {
+
+                if (ticks % 10 == 0) {
+                    updateAllWatcherRotations(client);
+                }
 
                 if (ticks >= 150) {
 
@@ -227,10 +179,6 @@ public final class WatcherEvent {
                     removeWatchers();
                 }
             }
-
-            // ========================================
-            // FINAL MESSAGE 1
-            // ========================================
 
             case 8 -> {
 
@@ -246,10 +194,6 @@ public final class WatcherEvent {
                 }
             }
 
-            // ========================================
-            // FINAL MESSAGE 2
-            // ========================================
-
             case 9 -> {
 
                 if (ticks >= 65) {
@@ -264,30 +208,23 @@ public final class WatcherEvent {
                 }
             }
 
-            // ========================================
-            // END
-            // ========================================
-
             case 10 -> {
 
                 if (ticks >= 90) {
-
                     stop(client);
                 }
             }
         }
     }
 
-    // ========================================
-    // FIRST WATCHER
-    // ========================================
+    private static void spawnFirstWatcher(MinecraftClient client) {
 
-    private static void spawnFirstWatcher(
-            MinecraftClient client
-    ) {
+        if (client.player == null || client.world == null)
+            return;
 
-        if (client.player == null ||
-                client.world == null)
+        GameProfile profile = getRandomTabProfile(client);
+
+        if (profile == null)
             return;
 
         Vec3d position =
@@ -296,43 +233,61 @@ public final class WatcherEvent {
                         30.0
                 );
 
-        ArmorStandEntity watcher =
-                new ArmorStandEntity(
-                        EntityType.ARMOR_STAND,
-                        client.world
+        OtherClientPlayerEntity watcher =
+                createWatcher(
+                        client,
+                        profile,
+                        position
                 );
 
-        watcher.setPosition(position);
-        watcher.setNoGravity(true);
-        watcher.setInvisible(false);
-        watcher.setShowArms(false);
+        if (watcher == null)
+            return;
 
         client.world.addEntity(watcher);
 
         watchers.add(watcher);
+
+        lookAtPlayer(
+                watcher,
+                client.player
+        );
     }
 
-    // ========================================
-    // FINAL WATCHERS
-    // ========================================
+    private static void spawnFinalWatchers(MinecraftClient client) {
 
-    private static void spawnFinalWatchers(
-            MinecraftClient client
-    ) {
+        if (client.player == null || client.world == null)
+            return;
 
-        if (client.player == null ||
-                client.world == null)
+        List<GameProfile> profiles =
+                getTabProfiles(client);
+
+        if (profiles.isEmpty())
             return;
 
         int count =
-                1 + RANDOM.nextInt(5);
+                Math.min(
+                        1 + RANDOM.nextInt(5),
+                        Math.max(1, profiles.size())
+                );
+
+        List<GameProfile> shuffled =
+                new ArrayList<>(profiles);
+
+        java.util.Collections.shuffle(
+                shuffled,
+                RANDOM
+        );
 
         for (int i = 0; i < count; i++) {
 
+            GameProfile profile =
+                    shuffled.get(
+                            i % shuffled.size()
+                    );
+
             double distance =
                     16.0 +
-                            RANDOM.nextDouble() *
-                                    16.0;
+                    RANDOM.nextDouble() * 16.0;
 
             Vec3d position =
                     getWatcherPosition(
@@ -340,99 +295,298 @@ public final class WatcherEvent {
                             distance
                     );
 
-            ArmorStandEntity watcher =
-                    new ArmorStandEntity(
-                            EntityType.ARMOR_STAND,
-                            client.world
+            OtherClientPlayerEntity watcher =
+                    createWatcher(
+                            client,
+                            profile,
+                            position
                     );
 
-            watcher.setPosition(position);
-            watcher.setNoGravity(true);
-            watcher.setInvisible(false);
-            watcher.setShowArms(false);
+            if (watcher == null)
+                continue;
 
             client.world.addEntity(watcher);
 
             watchers.add(watcher);
+
+            lookAtPlayer(
+                    watcher,
+                    client.player
+            );
         }
     }
 
-    // ========================================
-    // WATCHER MOVEMENT
-    // ========================================
+    private static OtherClientPlayerEntity createWatcher(
+            MinecraftClient client,
+            GameProfile originalProfile,
+            Vec3d position
+    ) {
 
-    private static void updateWatcher(
+        if (client.world == null)
+            return null;
+
+        /*
+         * Создаём новый UUID, чтобы клиентская копия
+         * не конфликтовала с настоящим игроком.
+         *
+         * При этом сохраняем свойства профиля,
+         * включая данные скина.
+         */
+        GameProfile fakeProfile =
+                new GameProfile(
+                        UUID.randomUUID(),
+                        originalProfile.getName()
+                );
+
+        fakeProfile
+                .getProperties()
+                .putAll(
+                        originalProfile.getProperties()
+                );
+
+        OtherClientPlayerEntity watcher =
+                new OtherClientPlayerEntity(
+                        client.world,
+                        fakeProfile
+                );
+
+        watcher.setPosition(position);
+
+        watcher.setNoGravity(true);
+        watcher.setInvulnerable(true);
+        watcher.setSilent(true);
+
+        watcher.setCustomNameVisible(false);
+
+        /*
+         * Клиентские сущности получают отрицательные ID,
+         * чтобы не пересекаться с серверными сущностями.
+         */
+        watcher.setId(
+                -100000 -
+                watchers.size() -
+                RANDOM.nextInt(10000)
+        );
+
+        lookAtPlayer(
+                watcher,
+                client.player
+        );
+
+        return watcher;
+    }
+
+    private static void updateWatchers(MinecraftClient client) {
+
+        if (client.player == null)
+            return;
+
+        for (OtherClientPlayerEntity watcher :
+                new ArrayList<>(watchers)) {
+
+            if (watcher == null || watcher.isRemoved())
+                continue;
+
+            lookAtPlayer(
+                    watcher,
+                    client.player
+            );
+
+            Vec3d playerPos =
+                    client.player.getEntityPos();
+
+            Vec3d watcherPos =
+                    watcher.getEntityPos();
+
+            double distance =
+                    playerPos.distanceTo(watcherPos);
+
+            if (distance <= 4.5)
+                continue;
+
+            Vec3d look =
+                    client.player
+                            .getRotationVec(1.0f)
+                            .normalize();
+
+            Vec3d toWatcher =
+                    watcherPos
+                            .subtract(playerPos)
+                            .normalize();
+
+            double dot =
+                    look.dotProduct(toWatcher);
+
+            /*
+             * Игрок смотрит на Watcher.
+             * В этот момент он полностью замирает.
+             */
+            boolean lookingAtWatcher =
+                    dot > 0.45;
+
+            if (lookingAtWatcher)
+                continue;
+
+            /*
+             * Игрок отвернулся.
+             * Watcher приближается.
+             */
+            Vec3d direction =
+                    playerPos
+                            .subtract(watcherPos)
+                            .normalize();
+
+            double step =
+                    0.55 +
+                    RANDOM.nextDouble() * 0.35;
+
+            Vec3d newPosition =
+                    watcherPos.add(
+                            direction.multiply(step)
+                    );
+
+            watcher.setPosition(
+                    newPosition
+            );
+
+            lookAtPlayer(
+                    watcher,
+                    client.player
+            );
+        }
+    }
+
+    private static void updateAllWatcherRotations(
             MinecraftClient client
     ) {
 
-        if (client.player == null ||
-                watchers.isEmpty())
+        if (client.player == null)
             return;
 
-        ArmorStandEntity watcher =
-                watchers.get(0);
+        for (OtherClientPlayerEntity watcher :
+                watchers) {
 
-        if (watcher.isRemoved())
-            return;
+            if (watcher == null || watcher.isRemoved())
+                continue;
 
-        Vec3d playerPos =
-                client.player.getEntityPos();
+            lookAtPlayer(
+                    watcher,
+                    client.player
+            );
+        }
+    }
 
-        Vec3d watcherPos =
-                watcher.getEntityPos();
+    private static void lookAtPlayer(
+            OtherClientPlayerEntity watcher,
+            ClientPlayerEntity player
+    ) {
 
-        double distance =
-                playerPos.distanceTo(
-                        watcherPos
+        Vec3d from =
+                watcher.getEyePos();
+
+        Vec3d target =
+                player.getEyePos();
+
+        double dx =
+                target.x - from.x;
+
+        double dy =
+                target.y - from.y;
+
+        double dz =
+                target.z - from.z;
+
+        double horizontal =
+                Math.sqrt(
+                        dx * dx +
+                        dz * dz
                 );
 
-        if (distance <= 4.5)
-            return;
+        float yaw =
+                (float)
+                        Math.toDegrees(
+                                Math.atan2(
+                                        dz,
+                                        dx
+                                )
+                        ) - 90.0f;
 
-        Vec3d look =
-                client.player
-                        .getRotationVec(1.0f)
-                        .normalize();
+        float pitch =
+                (float)
+                        -Math.toDegrees(
+                                Math.atan2(
+                                        dy,
+                                        horizontal
+                                )
+                        );
 
-        Vec3d toWatcher =
-                watcherPos
-                        .subtract(playerPos)
-                        .normalize();
+        watcher.setYaw(yaw);
+        watcher.setBodyYaw(yaw);
+        watcher.setHeadYaw(yaw);
+        watcher.setPitch(pitch);
+    }
 
-        double dot =
-                look.dotProduct(
-                        toWatcher
-                );
+    private static GameProfile getRandomTabProfile(
+            MinecraftClient client
+    ) {
 
-        boolean lookingAtWatcher =
-                dot > 0.45;
+        List<GameProfile> profiles =
+                getTabProfiles(client);
 
-        if (lookingAtWatcher)
-            return;
+        if (profiles.isEmpty())
+            return null;
 
-        Vec3d direction =
-                playerPos
-                        .subtract(watcherPos)
-                        .normalize();
-
-        double step =
-                1.8 +
-                        RANDOM.nextDouble() *
-                                0.8;
-
-        Vec3d newPosition =
-                watcherPos.add(
-                        direction.multiply(step)
-                );
-
-        watcher.setPosition(
-                newPosition
+        return profiles.get(
+                RANDOM.nextInt(
+                        profiles.size()
+                )
         );
     }
 
-    // ========================================
-    // POSITION
-    // ========================================
+    private static List<GameProfile> getTabProfiles(
+            MinecraftClient client
+    ) {
+
+        List<GameProfile> profiles =
+                new ArrayList<>();
+
+        if (client.player == null)
+            return profiles;
+
+        ClientPlayNetworkHandler networkHandler =
+                client.getNetworkHandler();
+
+        if (networkHandler == null)
+            return profiles;
+
+        Collection<PlayerListEntry> entries =
+                networkHandler.getPlayerList();
+
+        for (PlayerListEntry entry : entries) {
+
+            if (entry == null)
+                continue;
+
+            GameProfile profile =
+                    entry.getProfile();
+
+            if (profile == null)
+                continue;
+
+            /*
+             * Не используем самого игрока.
+             */
+            if (profile.getId().equals(
+                    client.player.getUuid()
+            )) {
+                continue;
+            }
+
+            profiles.add(profile);
+        }
+
+        return profiles;
+    }
 
     private static Vec3d getWatcherPosition(
             MinecraftClient client,
@@ -443,19 +597,19 @@ public final class WatcherEvent {
                 client.player;
 
         double angle =
-                RANDOM.nextDouble() *
-                        Math.PI *
-                        2.0;
+                RANDOM.nextDouble()
+                        * Math.PI
+                        * 2.0;
 
         double x =
-                player.getX() +
-                        Math.cos(angle) *
-                                distance;
+                player.getX()
+                        + Math.cos(angle)
+                        * distance;
 
         double z =
-                player.getZ() +
-                        Math.sin(angle) *
-                                distance;
+                player.getZ()
+                        + Math.sin(angle)
+                        * distance;
 
         return new Vec3d(
                 x,
@@ -464,29 +618,25 @@ public final class WatcherEvent {
         );
     }
 
-    // ========================================
-    // REMOVE WATCHERS
-    // ========================================
-
     private static void removeWatchers() {
 
-        for (ArmorStandEntity watcher :
+        for (OtherClientPlayerEntity watcher :
                 watchers) {
+
+            if (watcher == null)
+                continue;
 
             if (!watcher.isRemoved()) {
 
                 watcher.remove(
-                        net.minecraft.entity.Entity.RemovalReason.DISCARDED
+                        net.minecraft.entity.Entity.RemovalReason
+                                .DISCARDED
                 );
             }
         }
 
         watchers.clear();
     }
-
-    // ========================================
-    // MESSAGES
-    // ========================================
 
     private static void sendMessage(
             MinecraftClient client,
@@ -505,10 +655,6 @@ public final class WatcherEvent {
         );
     }
 
-    // ========================================
-    // VHS SOUND
-    // ========================================
-
     private static void playStatic(
             MinecraftClient client
     ) {
@@ -522,10 +668,6 @@ public final class WatcherEvent {
                 1.0f
         );
     }
-
-    // ========================================
-    // STING SOUND
-    // ========================================
 
     private static void playSting(
             MinecraftClient client
@@ -541,10 +683,6 @@ public final class WatcherEvent {
         );
     }
 
-    // ========================================
-    // STOP SOUNDS
-    // ========================================
-
     private static void stopSounds(
             MinecraftClient client
     ) {
@@ -559,10 +697,6 @@ public final class WatcherEvent {
                 null
         );
     }
-
-    // ========================================
-    // VHS / CRT OVERLAY
-    // ========================================
 
     public static void renderOverlay(
             DrawContext context
@@ -580,10 +714,6 @@ public final class WatcherEvent {
         float intensity =
                 getEffectIntensity();
 
-        // ========================================
-        // DARK SCREEN
-        // ========================================
-
         int darkness =
                 (int)
                         (intensity * 18.0f);
@@ -595,30 +725,25 @@ public final class WatcherEvent {
                     0,
                     width,
                     height,
-                    (darkness << 24)
+                    darkness << 24
             );
         }
 
-        // ========================================
-        // CRT SCANLINES
-        // ========================================
-
         int lineAlpha =
                 (int)
-                        (18.0f +
-                                intensity *
-                                        25.0f);
+                        (
+                                18.0f
+                                        + intensity * 25.0f
+                        );
 
         int lineColor =
-                (lineAlpha << 24);
+                lineAlpha << 24;
 
         int spacing = 3;
 
-        for (
-                int y = 0;
-                y < height;
-                y += spacing
-        ) {
+        for (int y = 0;
+             y < height;
+             y += spacing) {
 
             context.fill(
                     0,
@@ -629,67 +754,58 @@ public final class WatcherEvent {
             );
         }
 
-        // ========================================
-        // RANDOM VHS DISTORTION
-        // ========================================
-
-        if (RANDOM.nextFloat() <
-                0.035f +
-                        intensity *
-                                0.08f) {
+        if (RANDOM.nextFloat()
+                < 0.035f
+                + intensity * 0.08f) {
 
             int bandHeight =
                     2 +
-                            RANDOM.nextInt(
-                                    Math.max(
-                                            3,
-                                            height / 18
-                                    )
-                            );
+                    RANDOM.nextInt(
+                            Math.max(
+                                    3,
+                                    height / 18
+                            )
+                    );
 
             int y =
                     RANDOM.nextInt(
                             Math.max(
                                     1,
-                                    height -
-                                            bandHeight
+                                    height - bandHeight
                             )
                     );
 
             int alpha =
                     (int)
-                            (20 +
-                                    intensity *
-                                            35);
+                            (
+                                    20
+                                            + intensity * 35
+                            );
 
             context.fill(
                     0,
                     y,
                     width,
                     y + bandHeight,
-                    (alpha << 24)
+                    alpha << 24
             );
         }
 
-        // ========================================
-        // EDGE VIGNETTE
-        // ========================================
-
         int edgeAlpha =
                 (int)
-                        (10 +
-                                intensity *
-                                        28);
+                        (
+                                10
+                                        + intensity * 28
+                        );
 
         int edgeColor =
-                (edgeAlpha << 24);
+                edgeAlpha << 24;
 
         int edgeSize =
                 Math.max(
                         8,
                         (int)
-                                (width *
-                                        0.025f)
+                                (width * 0.025f)
                 );
 
         context.fill(
@@ -725,10 +841,6 @@ public final class WatcherEvent {
         );
     }
 
-    // ========================================
-    // EFFECT INTENSITY
-    // ========================================
-
     private static float getEffectIntensity() {
 
         if (stage <= 3)
@@ -749,10 +861,6 @@ public final class WatcherEvent {
         return 0.45f;
     }
 
-    // ========================================
-    // STOP EVENT
-    // ========================================
-
     private static void stop(
             MinecraftClient client
     ) {
@@ -762,11 +870,8 @@ public final class WatcherEvent {
         stopSounds(client);
 
         active = false;
-
         stage = 0;
-
         ticks = 0;
-
         playerName = null;
     }
 }
