@@ -178,6 +178,16 @@ public final class EventDirector {
                     )
             );
 
+            } else if (roll < 96 &&
+        level >= 2) {
+
+    queue.add(
+            new ScheduledEvent(
+                    EventType.BROKEN_SCRIPT,
+                    delay(40, 420)
+            )
+    );
+
         } else if (level >= 3) {
 
             queue.add(
