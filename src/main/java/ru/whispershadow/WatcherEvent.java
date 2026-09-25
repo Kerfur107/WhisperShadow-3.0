@@ -334,12 +334,6 @@ public final class WatcherEvent {
                         originalProfile.name()
                 );
 
-        fakeProfile
-                .properties()
-                .putAll(
-                        originalProfile.properties()
-                );
-
         OtherClientPlayerEntity watcher =
                 new OtherClientPlayerEntity(
                         client.world,
