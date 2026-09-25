@@ -28,6 +28,11 @@ public final class EventDirector {
             return;
         }
 
+        if (WatcherEvent.isActive()) {
+    queue.clear();
+    return;
+}
+
         if (cooldown > 0)
             cooldown--;
 
