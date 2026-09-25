@@ -156,246 +156,240 @@ public final class HorrorManager {
 
     private static final String[] PLAYER_CHAT_GLITCH_MESSAGES = {
 
-        "that's not me",
-        "I didn't type that",
-        "I didn't send that",
-        "I never said that",
-        "I never wrote that",
-        "I don't remember saying that",
-        "I don't remember typing that",
-        "I don't remember sending that",
-        "that's not what I said",
-        "that's not what I typed",
-        "that wasn't me",
-        "that wasn't my message",
-        "someone is using my name",
-        "someone is typing for me",
-        "someone is using my account",
-        "something is typing for me",
-        "something is pretending to be me",
-        "I wasn't there",
-        "I wasn't here",
-        "I didn't go there",
-        "I never went there",
-        "who just sent that?",
-        "did I just say that?",
-        "did you see that message?",
-        "wait, I didn't write that",
-        "wait, that's not me",
-        "I didn't press anything",
-        "I didn't type anything",
-        "my chat is acting weird",
-        "something is wrong with my chat",
-        "I think someone has my account",
-        "I think someone is controlling me",
-        "I'm not doing that",
-        "that's not where I am",
-        "I can see myself",
-        "why can I see another me?",
-        "there's another me",
-        "I see someone with my skin",
-        "someone has my skin",
-        "someone looks exactly like me",
-        "there's someone pretending to be me",
-        "that's my name but that's not me",
-        "that's my skin but that's not me",
-        "I'm right here",
-        "I'm still here",
-        "I'm not over there",
-        "that's not my player",
-        "why is there another player with my name?",
-        "there are two of me",
-        "I think there's a copy of me",
-        "something copied me",
-        "it copied my skin",
-        "it copied my name",
-        "it copied everything",
-        "it knows my name",
-        "it is using my name",
-        "it is using my skin",
-        "it is pretending to be me",
-        "don't trust the other me",
-        "don't talk to the other me",
-        "that's not me behind you",
-        "if you see me, that's not me",
-        "if I appear twice, leave",
-        "if you see two of me, don't move",
-        "don't follow the one that looks like me",
-        "the other one isn't me",
-        "the one behind you isn't me",
-        "I don't know who that is",
-        "I think something is copying us",
-        "it's learning our names",
-        "it's pretending to be us",
-        "it can use our names",
-        "it can send messages as us",
-        "don't believe messages from me",
-        "don't believe anything I say",
-        "if I tell you to follow me, don't",
-        "if I tell you to turn around, don't",
-        "I don't know who is typing this",
-        "I don't know if this is really me",
-        "I'm scared to type anything",
-        "I think it can read my chat",
-        "I think it can control my chat",
-        "it just typed something",
-        "it just moved me",
-        "it just looked at you",
-        "it is standing where I was",
-        "it was standing next to me",
-        "it was wearing my skin",
-        "it had my name",
-        "it looked exactly like me",
-        "I saw myself across the room",
-        "I saw myself behind you",
-        "I saw another me",
-        "I don't think I'm the only one",
-        "there's something pretending to be us",
-        "I think it wants you to trust me",
-        "I think it wants you to think it's me",
-        "it wants you to follow me",
-        "don't follow me",
-        "I didn't ask you to come here",
-        "I didn't tell you to follow me",
-        "I didn't tell you anything",
-        "I swear that wasn't me",
-        "I swear I didn't type that",
-        "I swear I'm not doing this",
-        "please believe me",
-        "please don't trust me",
-        "don't trust my messages",
-        "don't trust my name",
-        "don't trust my skin",
-        "don't trust the player that looks like me"
-};
+            "that's not me",
+            "I didn't type that",
+            "I didn't send that",
+            "I never said that",
+            "I never wrote that",
+            "I don't remember saying that",
+            "I don't remember typing that",
+            "I don't remember sending that",
+            "that's not what I said",
+            "that's not what I typed",
+            "that wasn't me",
+            "that wasn't my message",
+            "someone is using my name",
+            "someone is typing for me",
+            "someone is using my account",
+            "something is typing for me",
+            "something is pretending to be me",
+            "I wasn't there",
+            "I wasn't here",
+            "I didn't go there",
+            "I never went there",
+            "who just sent that?",
+            "did I just say that?",
+            "did you see that message?",
+            "wait, I didn't write that",
+            "wait, that's not me",
+            "I didn't press anything",
+            "I didn't type anything",
+            "my chat is acting weird",
+            "something is wrong with my chat",
+            "I think someone has my account",
+            "I think someone is controlling me",
+            "I'm not doing that",
+            "that's not where I am",
+            "I can see myself",
+            "why can I see another me?",
+            "there's another me",
+            "I see someone with my skin",
+            "someone has my skin",
+            "someone looks exactly like me",
+            "there's someone pretending to be me",
+            "that's my name but that's not me",
+            "that's my skin but that's not me",
+            "I'm right here",
+            "I'm still here",
+            "I'm not over there",
+            "that's not my player",
+            "why is there another player with my name?",
+            "there are two of me",
+            "I think there's a copy of me",
+            "something copied me",
+            "it copied my skin",
+            "it copied my name",
+            "it copied everything",
+            "it knows my name",
+            "it is using my name",
+            "it is using my skin",
+            "it is pretending to be me",
+            "don't trust the other me",
+            "don't talk to the other me",
+            "that's not me behind you",
+            "if you see me, that's not me",
+            "if I appear twice, leave",
+            "if you see two of me, don't move",
+            "don't follow the one that looks like me",
+            "the other one isn't me",
+            "the one behind you isn't me",
+            "I don't know who that is",
+            "I think something is copying us",
+            "it's learning our names",
+            "it's pretending to be us",
+            "it can use our names",
+            "it can send messages as us",
+            "don't believe messages from me",
+            "don't believe anything I say",
+            "if I tell you to follow me, don't",
+            "if I tell you to turn around, don't",
+            "I don't know who is typing this",
+            "I don't know if this is really me",
+            "I'm scared to type anything",
+            "I think it can read my chat",
+            "I think it can control my chat",
+            "it just typed something",
+            "it just moved me",
+            "it just looked at you",
+            "it is standing where I was",
+            "it was standing next to me",
+            "it was wearing my skin",
+            "it had my name",
+            "it looked exactly like me",
+            "I saw myself across the room",
+            "I saw myself behind you",
+            "I saw another me",
+            "I don't think I'm the only one",
+            "there's something pretending to be us",
+            "I think it wants you to trust me",
+            "I think it wants you to think it's me",
+            "it wants you to follow me",
+            "don't follow me",
+            "I didn't ask you to come here",
+            "I didn't tell you to follow me",
+            "I didn't tell you anything",
+            "I swear that wasn't me",
+            "I swear I didn't type that",
+            "I swear I'm not doing this",
+            "please believe me",
+            "please don't trust me",
+            "don't trust my messages",
+            "don't trust my name",
+            "don't trust my skin",
+            "don't trust the player that looks like me"
+    };
 
     private static final String[] PLAYER_CHAT_MESSAGES = {
 
-        // Обычные тревожные
-        "you are nothing",
-        "don't look behind you",
-        "I can see you",
-        "where are you",
-        "run",
-        "leave",
-        "we are watching",
-        "you shouldn't be here",
-        "don't trust them",
-        "did you hear that?",
-        "he is behind you",
-        "I saw it too",
-        "something is wrong",
-        "can you see it?",
-        "are you alone?",
-        "why are you still here?",
-        "get out",
-        "turn around",
-        "don't turn around",
-        "keep moving",
-        "don't stop",
-        "hide",
-        "stay away",
-        "go back",
-        "leave this place",
-        "it's watching you",
-        "it's getting closer",
-        "I wouldn't stay there",
-        "you need to leave",
+            "you are nothing",
+            "don't look behind you",
+            "I can see you",
+            "where are you",
+            "run",
+            "leave",
+            "we are watching",
+            "you shouldn't be here",
+            "don't trust them",
+            "did you hear that?",
+            "he is behind you",
+            "I saw it too",
+            "something is wrong",
+            "can you see it?",
+            "are you alone?",
+            "why are you still here?",
+            "get out",
+            "turn around",
+            "don't turn around",
+            "keep moving",
+            "don't stop",
+            "hide",
+            "stay away",
+            "go back",
+            "leave this place",
+            "it's watching you",
+            "it's getting closer",
+            "I wouldn't stay there",
+            "you need to leave",
 
-        // Сообщения будто игрок что-то заметил
-        "what was that?",
-        "did you see that?",
-        "I just saw something",
-        "there was someone behind you",
-        "I saw someone near you",
-        "something moved",
-        "something is following you",
-        "there is something behind you",
-        "I think you're being followed",
-        "I don't think you're alone",
-        "look at the trees",
-        "look behind you",
-        "check your surroundings",
-        "don't go there",
-        "don't go that way",
-        "something is waiting for you",
-        "I wouldn't go inside",
-        "don't enter that room",
-        "there's someone here",
-        "I heard footsteps",
+            "what was that?",
+            "did you see that?",
+            "I just saw something",
+            "there was someone behind you",
+            "I saw someone near you",
+            "something moved",
+            "something is following you",
+            "there is something behind you",
+            "I think you're being followed",
+            "I don't think you're alone",
+            "look at the trees",
+            "look behind you",
+            "check your surroundings",
+            "don't go there",
+            "don't go that way",
+            "something is waiting for you",
+            "I wouldn't go inside",
+            "don't enter that room",
+            "there's someone here",
+            "I heard footsteps",
 
-        // Более личные
-        "why are you ignoring me?",
-        "can you hear me?",
-        "answer me",
-        "say something",
-        "why aren't you talking?",
-        "I've been trying to reach you",
-        "I've been watching you",
-        "I know where you are",
-        "I know what you're doing",
-        "I know you're there",
-        "you can't hide",
-        "you can't run forever",
-        "we know where you are",
-        "we know what you did",
-        "you shouldn't have come here",
-        "you should have left earlier",
+            "why are you ignoring me?",
+            "can you hear me?",
+            "answer me",
+            "say something",
+            "why aren't you talking?",
+            "I've been trying to reach you",
+            "I've been watching you",
+            "I know where you are",
+            "I know what you're doing",
+            "I know you're there",
+            "you can't hide",
+            "you can't run forever",
+            "we know where you are",
+            "we know what you did",
+            "you shouldn't have come here",
+            "you should have left earlier",
 
-        // Очень короткие
-        "help",
-        "HELP",
-        "run",
-        "RUN",
-        "leave",
-        "STOP",
-        "don't",
-        "behind you",
-        "look behind you",
-        "please",
-        "please leave",
-        "please run",
+            "help",
+            "HELP",
+            "run",
+            "RUN",
+            "leave",
+            "STOP",
+            "don't",
+            "behind you",
+            "look behind you",
+            "please",
+            "please leave",
+            "please run",
 
-        // Редкие / жуткие
-        "he knows you're here",
-        "it knows you're here",
-        "it can see you",
-        "it can hear you",
-        "it is getting closer",
-        "it's right there",
-        "it's standing behind you",
-        "it's been here the whole time",
-        "it never left",
-        "you already saw it",
-        "you just don't remember",
-        "you've seen this before",
-        "this has happened before",
-        "you were warned",
-        "you should not have joined",
-        "you were not supposed to be here",
-        "we tried to warn you",
-        "we can't help you",
-        "there's nothing we can do",
-        "it's too late",
+            "he knows you're here",
+            "it knows you're here",
+            "it can see you",
+            "it can hear you",
+            "it is getting closer",
+            "it's right there",
+            "it's standing behind you",
+            "it's been here the whole time",
+            "it never left",
+            "you already saw it",
+            "you just don't remember",
+            "you've seen this before",
+            "this has happened before",
+            "you were warned",
+            "you should not have joined",
+            "you were not supposed to be here",
+            "we tried to warn you",
+            "we can't help you",
+            "there's nothing we can do",
+            "it's too late",
 
-        // Совсем редкие
-        "I can see what you're looking at",
-        "I know where you're looking",
-        "stop looking at the darkness",
-        "don't look into the dark",
-        "don't follow the voice",
-        "don't answer it",
-        "don't talk to it",
-        "if you hear your name, don't answer",
-        "if you see me, run",
-        "if I disappear, don't look for me",
-        "if I say run, run",
-        "don't wait for me",
-        "I'm not alone",
-        "I'm not the one talking",
-        "that's not my message",
-        "something is typing for me"
-};
+            "I can see what you're looking at",
+            "I know where you're looking",
+            "stop looking at the darkness",
+            "don't look into the dark",
+            "don't follow the voice",
+            "don't answer it",
+            "don't talk to it",
+            "if you hear your name, don't answer",
+            "if you see me, run",
+            "if I disappear, don't look for me",
+            "if I say run, run",
+            "don't wait for me",
+            "I'm not alone",
+            "I'm not the one talking",
+            "that's not my message",
+            "something is typing for me"
+    };
 
     // GENERAL HORROR STATE
     private static int glitchTicks = 0;
@@ -412,9 +406,9 @@ public final class HorrorManager {
     private static int distortionTicks = 0;
     private static int torchTicks = 0;
 
-private static int playerChatCooldown = 0;
-private static int playerChatGlitchCooldown = 0;
-    
+    private static int playerChatCooldown = 0;
+    private static int playerChatGlitchCooldown = 0;
+
     private static final Map<BlockPos, BlockState> hiddenTorches =
             new HashMap<>();
 
@@ -456,11 +450,12 @@ private static int playerChatGlitchCooldown = 0;
     private static final int RUN_DURATION_TICKS = 20 * 20;
 
     private static boolean brokenScriptActive = false;
-private static int brokenScriptStage = 0;
-private static int brokenScriptTicks = 0;
-private static int brokenScriptCooldown = 0;
+    private static int brokenScriptStage = 0;
+    private static int brokenScriptTicks = 0;
+    private static int brokenScriptCooldown = 0;
 
-private static String brokenScriptPlayer = null;
+    private static String brokenScriptPlayer = null;
+
     // Player skin
     private static com.mojang.authlib.GameProfile getRandomPlayerProfile(
             MinecraftClient client
@@ -517,6 +512,9 @@ private static String brokenScriptPlayer = null;
 
     // PLAYER CHAT
     public static void handlePlayerChat(String message) {
+
+        if (WatcherEvent.isActive())
+            return;
 
         MinecraftClient client =
                 MinecraftClient.getInstance();
@@ -691,6 +689,48 @@ private static String brokenScriptPlayer = null;
     // TICK
     public static void tick(MinecraftClient client) {
 
+        /*
+         * WATCHER EVENT LOCK
+         *
+         * Пока WatcherEvent активен:
+         * - EventDirector не работает;
+         * - FindUsEvent не работает;
+         * - SignIllusionEvent не работает;
+         * - ответы в чат не доставляются;
+         * - RUN прекращается;
+         * - фигуры удаляются;
+         * - Doppelganger удаляется;
+         * - BrokenScript прекращается;
+         * - Don't Move прекращается;
+         * - остальные таймеры HorrorManager не тикают.
+         *
+         * Сам WatcherEvent обновляется отдельно
+         * в WhisperShadowClient.
+         */
+        if (WatcherEvent.isActive()) {
+
+            stopChase(client);
+            removeFigure(client);
+            removeDoppelganger(client);
+            restoreTorches(client);
+
+            replyDelay = 0;
+            pendingReply = null;
+
+            showYourselfDelay = 0;
+            showYourselfPending = false;
+
+            dontMoveActive = false;
+            dontMoveTicks = 0;
+
+            brokenScriptActive = false;
+            brokenScriptStage = 0;
+            brokenScriptTicks = 0;
+            brokenScriptPlayer = null;
+
+            return;
+        }
+
         InsanityManager.tick(client);
         EventDirector.tick(client);
 
@@ -729,6 +769,7 @@ private static String brokenScriptPlayer = null;
 
             playerChatCooldown = 0;
             playerChatGlitchCooldown = 0;
+
             return;
         }
 
@@ -745,7 +786,8 @@ private static String brokenScriptPlayer = null;
                 showYourselfPending = false;
 
                 if (client.player != null &&
-                        client.world != null) {
+                        client.world != null &&
+                        !WatcherEvent.isActive()) {
 
                     fireDirectorFigure(client);
 
@@ -780,7 +822,8 @@ private static String brokenScriptPlayer = null;
             replyDelay--;
 
         if (replyDelay == 0 &&
-                pendingReply != null) {
+                pendingReply != null &&
+                !WatcherEvent.isActive()) {
 
             deliverReply(
                     client,
@@ -812,44 +855,48 @@ private static String brokenScriptPlayer = null;
             tabMessageCooldown--;
 
         if (playerChatCooldown > 0)
-    playerChatCooldown--;
+            playerChatCooldown--;
 
-if (playerChatGlitchCooldown > 0)
-    playerChatGlitchCooldown--;
+        if (playerChatGlitchCooldown > 0)
+            playerChatGlitchCooldown--;
 
         if (brokenScriptCooldown > 0)
-    brokenScriptCooldown--;
+            brokenScriptCooldown--;
 
-if (brokenScriptActive)
-    tickBrokenScript(client);
-        
-if (playerChatCooldown <= 0) {
+        if (brokenScriptActive)
+            tickBrokenScript(client);
 
-    if (RANDOM.nextInt(1000) < 2) {
+        if (!WatcherEvent.isActive()) {
 
-        firePlayerChat(client);
+            if (playerChatCooldown <= 0) {
 
-        playerChatCooldown =
-                20 * (
-                        35 +
-                                RANDOM.nextInt(86)
-                );
-    }
-}
+                if (RANDOM.nextInt(1000) < 2) {
 
-if (playerChatGlitchCooldown <= 0) {
+                    firePlayerChat(client);
 
-    if (RANDOM.nextInt(2500) < 2) {
+                    playerChatCooldown =
+                            20 * (
+                                    35 +
+                                            RANDOM.nextInt(86)
+                            );
+                }
+            }
 
-        firePlayerChatGlitch(client);
+            if (playerChatGlitchCooldown <= 0) {
 
-        playerChatGlitchCooldown =
-                20 * (
-                        90 +
-                                RANDOM.nextInt(151)
-                );
-    }
-}
+                if (RANDOM.nextInt(2500) < 2) {
+
+                    firePlayerChatGlitch(client);
+
+                    playerChatGlitchCooldown =
+                            20 * (
+                                    90 +
+                                            RANDOM.nextInt(151)
+                            );
+                }
+            }
+        }
+
         // DON'T MOVE
         if (dontMoveActive) {
 
@@ -948,9 +995,9 @@ if (playerChatGlitchCooldown <= 0) {
 
         if (runActive) {
 
-    runTicks--;
+            runTicks--;
 
-    if (figure != null) {
+            if (figure != null) {
 
                 figure.chasePlayer(
                         client.player
@@ -1052,51 +1099,56 @@ if (playerChatGlitchCooldown <= 0) {
 
     // RUN EVENT
     public static void fireRun(
-        MinecraftClient client
-) {
+            MinecraftClient client
+    ) {
 
-    if (client.player == null ||
-            client.world == null)
-        return;
+        if (WatcherEvent.isActive())
+            return;
 
-    if (runActive)
-        return;
+        if (client.player == null ||
+                client.world == null)
+            return;
 
-    if (dontMoveActive) {
-        dontMoveActive = false;
-        dontMoveTicks = 0;
+        if (runActive)
+            return;
+
+        if (dontMoveActive) {
+            dontMoveActive = false;
+            dontMoveTicks = 0;
+        }
+
+        runActive = true;
+        runTicks = RUN_DURATION_TICKS;
+
+        removeFigure(client);
+
+        spawnChaseFigure(client);
+
+        client.player.sendMessage(
+                Text.literal("RUN.")
+                        .formatted(
+                                Formatting.DARK_RED,
+                                Formatting.BOLD
+                        ),
+                false
+        );
+
+        fireDirectorGlitch();
+
+        playChaseSound(client);
+
+        InsanityManager.add(
+                8.0f +
+                        RANDOM.nextFloat() * 5.0f
+        );
     }
 
-    runActive = true;
-    runTicks = RUN_DURATION_TICKS;
-
-    removeFigure(client);
-
-    spawnChaseFigure(client);
-
-    client.player.sendMessage(
-            Text.literal("RUN.")
-                    .formatted(
-                            Formatting.DARK_RED,
-                            Formatting.BOLD
-                    ),
-            false
-    );
-
-    fireDirectorGlitch();
-
-    playChaseSound(client);
-
-    InsanityManager.add(
-            8.0f +
-                    RANDOM.nextFloat() * 5.0f
-    );
-}
-
-    
     private static void spawnChaseFigure(
             MinecraftClient client
     ) {
+
+        if (WatcherEvent.isActive())
+            return;
 
         if (client.player == null ||
                 client.world == null)
@@ -1155,43 +1207,49 @@ if (playerChatGlitchCooldown <= 0) {
 
     // CHASE MUSIC
     private static void playChaseSound(
-        MinecraftClient client
-) {
+            MinecraftClient client
+    ) {
 
-    if (client.player == null)
-        return;
+        if (WatcherEvent.isActive())
+            return;
 
-    client.player.playSound(
-            ModSounds.CIRCUIT_CHASE,
-            1.0f,
-            1.0f
-    );
-}
+        if (client.player == null)
+            return;
 
-private static void stopChaseSound(
-        MinecraftClient client
-) {
+        client.player.playSound(
+                ModSounds.CIRCUIT_CHASE,
+                1.0f,
+                1.0f
+        );
+    }
 
-    client.getSoundManager().stopSounds(
-            ModSounds.CIRCUIT_CHASE_ID,
-            null
-    );
-}
+    private static void stopChaseSound(
+            MinecraftClient client
+    ) {
 
-private static void stopChase(
-        MinecraftClient client
-) {
+        client.getSoundManager().stopSounds(
+                ModSounds.CIRCUIT_CHASE_ID,
+                null
+        );
+    }
 
-    runActive = false;
-    runTicks = 0;
+    private static void stopChase(
+            MinecraftClient client
+    ) {
 
-    stopChaseSound(client);
-}
+        runActive = false;
+        runTicks = 0;
+
+        stopChaseSound(client);
+    }
 
     // DON'T MOVE EVENT
     public static void fireDontMove(
             MinecraftClient client
     ) {
+
+        if (WatcherEvent.isActive())
+            return;
 
         if (client.player == null ||
                 client.world == null ||
@@ -1234,6 +1292,9 @@ private static void stopChase(
             MinecraftClient client,
             String reply
     ) {
+
+        if (WatcherEvent.isActive())
+            return;
 
         if (client.player == null)
             return;
@@ -1296,6 +1357,9 @@ private static void stopChase(
             MinecraftClient client
     ) {
 
+        if (WatcherEvent.isActive())
+            return;
+
         if (client.player == null)
             return;
 
@@ -1317,6 +1381,9 @@ private static void stopChase(
     }
 
     public static void fireDirectorGlitch() {
+
+        if (WatcherEvent.isActive())
+            return;
 
         int level =
                 InsanityManager.getLevelNumber();
@@ -1340,6 +1407,9 @@ private static void stopChase(
     public static void fireDirectorWhisper(
             MinecraftClient client
     ) {
+
+        if (WatcherEvent.isActive())
+            return;
 
         if (client.player == null)
             return;
@@ -1365,6 +1435,9 @@ private static void stopChase(
             MinecraftClient client
     ) {
 
+        if (WatcherEvent.isActive())
+            return;
+
         if (figure == null &&
                 client.player != null &&
                 client.world != null &&
@@ -1381,6 +1454,9 @@ private static void stopChase(
             MinecraftClient client
     ) {
 
+        if (WatcherEvent.isActive())
+            return;
+
         fireDirectorGlitch();
 
         if (client.player != null) {
@@ -1395,6 +1471,9 @@ private static void stopChase(
     }
 
     public static void fireDirectorVhs() {
+
+        if (WatcherEvent.isActive())
+            return;
 
         if (vhsTicks > 0)
             return;
@@ -1428,6 +1507,9 @@ private static void stopChase(
             MinecraftClient client
     ) {
 
+        if (WatcherEvent.isActive())
+            return;
+
         spawnFigure(
                 client,
                 0
@@ -1438,6 +1520,9 @@ private static void stopChase(
             MinecraftClient client,
             int level
     ) {
+
+        if (WatcherEvent.isActive())
+            return;
 
         if (client.player == null ||
                 client.world == null)
@@ -1629,6 +1714,9 @@ private static void stopChase(
             MinecraftClient client
     ) {
 
+        if (WatcherEvent.isActive())
+            return;
+
         if (client.player == null ||
                 tabMessageCooldown > 0)
             return;
@@ -1703,513 +1791,527 @@ private static void stopChase(
         );
     }
 
-    
-public static void fireBrokenScript(
-        MinecraftClient client
-) {
+    // BROKEN SCRIPT
+    public static void fireBrokenScript(
+            MinecraftClient client
+    ) {
 
-    if (client.player == null ||
-            client.world == null)
-        return;
+        if (WatcherEvent.isActive())
+            return;
 
-    if (brokenScriptActive)
-        return;
+        if (client.player == null ||
+                client.world == null)
+            return;
 
-    if (runActive)
-        return;
+        if (brokenScriptActive)
+            return;
 
-    List<PlayerListEntry> players =
-            new ArrayList<>(
-                    client.player.networkHandler
-                            .getPlayerList()
-            );
+        if (runActive)
+            return;
 
-    players.removeIf(entry ->
-            entry.getProfile() == null ||
-                    entry.getProfile().name() == null
-    );
+        List<PlayerListEntry> players =
+                new ArrayList<>(
+                        client.player.networkHandler
+                                .getPlayerList()
+                );
 
-    if (players.isEmpty())
-        return;
+        players.removeIf(entry ->
+                entry.getProfile() == null ||
+                        entry.getProfile().name() == null
+        );
 
-    PlayerListEntry entry =
-            players.get(
-                    RANDOM.nextInt(
-                            players.size()
-                    )
-            );
+        if (players.isEmpty())
+            return;
 
-    brokenScriptPlayer =
-            entry.getProfile().name();
+        PlayerListEntry entry =
+                players.get(
+                        RANDOM.nextInt(
+                                players.size()
+                        )
+                );
 
-    brokenScriptActive = true;
-    brokenScriptStage = 0;
-    brokenScriptTicks = 0;
+        brokenScriptPlayer =
+                entry.getProfile().name();
 
-    client.player.sendMessage(
-            Text.literal(
-                    brokenScriptPlayer +
-                            " joined the game"
-            ).formatted(
-                    Formatting.GRAY
-            ),
-            false
-    );
-}
+        brokenScriptActive = true;
+        brokenScriptStage = 0;
+        brokenScriptTicks = 0;
 
-    
+        client.player.sendMessage(
+                Text.literal(
+                        brokenScriptPlayer +
+                                " joined the game"
+                ).formatted(
+                        Formatting.GRAY
+                ),
+                false
+        );
+    }
+
     private static void tickBrokenScript(
-        MinecraftClient client
-) {
+            MinecraftClient client
+    ) {
 
-    if (client.player == null ||
-            client.world == null) {
+        if (WatcherEvent.isActive()) {
+            stopBrokenScript();
+            return;
+        }
 
-        stopBrokenScript();
-        return;
+        if (client.player == null ||
+                client.world == null) {
+
+            stopBrokenScript();
+            return;
+        }
+
+        brokenScriptTicks++;
+
+        switch (brokenScriptStage) {
+
+            case 0 -> {
+
+                if (brokenScriptTicks >= 60) {
+
+                    brokenScriptTicks = 0;
+                    brokenScriptStage = 1;
+
+                    sendBrokenChat(
+                            client,
+                            brokenScriptPlayer +
+                                    ": can you see this?"
+                    );
+                }
+            }
+
+            case 1 -> {
+
+                if (brokenScriptTicks >= 45) {
+
+                    brokenScriptTicks = 0;
+                    brokenScriptStage = 2;
+
+                    sendBrokenChat(
+                            client,
+                            brokenScriptPlayer +
+                                    ": can y█u s██ th██?"
+                    );
+
+                    client.player.playSound(
+                            ModSounds.GLITCH,
+                            0.12f,
+                            0.70f +
+                                    RANDOM.nextFloat() * 0.25f
+                    );
+                }
+            }
+
+            case 2 -> {
+
+                if (brokenScriptTicks >= 50) {
+
+                    brokenScriptTicks = 0;
+                    brokenScriptStage = 3;
+
+                    sendBrokenChat(
+                            client,
+                            brokenScriptPlayer +
+                                    " left the game"
+                    );
+                }
+            }
+
+            case 3 -> {
+
+                if (brokenScriptTicks >= 35) {
+
+                    brokenScriptTicks = 0;
+                    brokenScriptStage = 4;
+
+                    sendBrokenChat(
+                            client,
+                            brokenScriptPlayer +
+                                    ": █████████"
+                    );
+
+                    client.player.playSound(
+                            ModSounds.GLITCH,
+                            0.18f,
+                            0.55f
+                    );
+
+                    fireDirectorGlitch();
+                }
+            }
+
+            case 4 -> {
+
+                if (brokenScriptTicks >= 50) {
+
+                    brokenScriptTicks = 0;
+                    brokenScriptStage = 5;
+
+                    sendBrokenChat(
+                            client,
+                            brokenScriptPlayer +
+                                    ": RUN"
+                    );
+                }
+            }
+
+            case 5 -> {
+
+                if (brokenScriptTicks >= 25) {
+
+                    brokenScriptTicks = 0;
+                    brokenScriptStage = 6;
+
+                    fireRun(client);
+                }
+            }
+
+            case 6 -> {
+
+                if (!runActive) {
+
+                    brokenScriptTicks = 0;
+                    brokenScriptStage = 7;
+                }
+            }
+
+            case 7 -> {
+
+                if (brokenScriptTicks >= 40) {
+
+                    sendBrokenChat(
+                            client,
+                            brokenScriptPlayer +
+                                    ": did you see that?"
+                    );
+
+                    InsanityManager.add(
+                            3.0f +
+                                    RANDOM.nextFloat() * 3.0f
+                    );
+
+                    stopBrokenScript();
+                }
+            }
+        }
     }
-
-    brokenScriptTicks++;
-
-    switch (brokenScriptStage) {
-
-        case 0 -> {
-
-            if (brokenScriptTicks >= 60) {
-
-                brokenScriptTicks = 0;
-                brokenScriptStage = 1;
-
-                sendBrokenChat(
-                        client,
-                        brokenScriptPlayer +
-                                ": can you see this?"
-                );
-            }
-        }
-
-        case 1 -> {
-
-            if (brokenScriptTicks >= 45) {
-
-                brokenScriptTicks = 0;
-                brokenScriptStage = 2;
-
-                sendBrokenChat(
-                        client,
-                        brokenScriptPlayer +
-                                ": can y█u s██ th██?"
-                );
-
-                client.player.playSound(
-                        ModSounds.GLITCH,
-                        0.12f,
-                        0.70f +
-                                RANDOM.nextFloat() * 0.25f
-                );
-            }
-        }
-
-        case 2 -> {
-
-            if (brokenScriptTicks >= 50) {
-
-                brokenScriptTicks = 0;
-                brokenScriptStage = 3;
-
-                sendBrokenChat(
-                        client,
-                        brokenScriptPlayer +
-                                " left the game"
-                );
-            }
-        }
-
-        case 3 -> {
-
-            if (brokenScriptTicks >= 35) {
-
-                brokenScriptTicks = 0;
-                brokenScriptStage = 4;
-
-                sendBrokenChat(
-                        client,
-                        brokenScriptPlayer +
-                                ": █████████"
-                );
-
-                client.player.playSound(
-                        ModSounds.GLITCH,
-                        0.18f,
-                        0.55f
-                );
-
-                fireDirectorGlitch();
-            }
-        }
-
-        case 4 -> {
-
-            if (brokenScriptTicks >= 50) {
-
-                brokenScriptTicks = 0;
-                brokenScriptStage = 5;
-
-                sendBrokenChat(
-                        client,
-                        brokenScriptPlayer +
-                                ": RUN"
-                );
-            }
-        }
-
-        case 5 -> {
-
-            if (brokenScriptTicks >= 25) {
-
-                brokenScriptTicks = 0;
-                brokenScriptStage = 6;
-
-                fireRun(client);
-            }
-        }
-
-        case 6 -> {
-
-            if (!runActive) {
-
-                brokenScriptTicks = 0;
-                brokenScriptStage = 7;
-            }
-        }
-
-        case 7 -> {
-
-            if (brokenScriptTicks >= 40) {
-
-                sendBrokenChat(
-                        client,
-                        brokenScriptPlayer +
-                                ": did you see that?"
-                );
-
-                InsanityManager.add(
-                        3.0f +
-                                RANDOM.nextFloat() * 3.0f
-                );
-
-                stopBrokenScript();
-            }
-        }
-    }
-}
 
     private static void sendBrokenChat(
-        MinecraftClient client,
-        String message
-) {
+            MinecraftClient client,
+            String message
+    ) {
 
-    if (client.player == null)
-        return;
+        if (WatcherEvent.isActive())
+            return;
 
-    MutableText text =
-            Text.literal(message);
+        if (client.player == null)
+            return;
 
-    int roll =
-            RANDOM.nextInt(100);
+        MutableText text =
+                Text.literal(message);
 
-    if (roll < 15) {
+        int roll =
+                RANDOM.nextInt(100);
 
-        text = glitchText(message)
-                .formatted(
-                        Formatting.DARK_RED
-                );
+        if (roll < 15) {
 
-    } else if (roll < 30) {
+            text = glitchText(message)
+                    .formatted(
+                            Formatting.DARK_RED
+                    );
 
-        text.formatted(
-                Formatting.RED
-        );
+        } else if (roll < 30) {
 
-    } else if (roll < 45) {
+            text.formatted(
+                    Formatting.RED
+            );
 
-        text.formatted(
-                Formatting.DARK_PURPLE
-        );
+        } else if (roll < 45) {
 
-    } else if (roll < 60) {
+            text.formatted(
+                    Formatting.DARK_PURPLE
+            );
 
-        text.formatted(
-                Formatting.DARK_GRAY
-        );
+        } else if (roll < 60) {
 
-    } else {
+            text.formatted(
+                    Formatting.DARK_GRAY
+            );
 
-        text.formatted(
-                Formatting.WHITE
+        } else {
+
+            text.formatted(
+                    Formatting.WHITE
+            );
+        }
+
+        client.player.sendMessage(
+                text,
+                false
         );
     }
-
-    client.player.sendMessage(
-            text,
-            false
-    );
-}
 
     private static void stopBrokenScript() {
 
-    brokenScriptActive = false;
-    brokenScriptStage = 0;
-    brokenScriptTicks = 0;
-    brokenScriptPlayer = null;
+        brokenScriptActive = false;
+        brokenScriptStage = 0;
+        brokenScriptTicks = 0;
+        brokenScriptPlayer = null;
 
-    brokenScriptCooldown =
-            20 * (
-                    8 +
-                            RANDOM.nextInt(13)
-            );
-}
-    
+        brokenScriptCooldown =
+                20 * (
+                        8 +
+                                RANDOM.nextInt(13)
+                );
+    }
+
     // FAKE PLAYER CHAT
-private static void firePlayerChat(
-        MinecraftClient client
-) {
+    private static void firePlayerChat(
+            MinecraftClient client
+    ) {
 
-    if (client.player == null ||
-            client.world == null)
-        return;
+        if (WatcherEvent.isActive())
+            return;
 
-    List<PlayerListEntry> players =
-            new ArrayList<>(
-                    client.player.networkHandler
-                            .getPlayerList()
+        if (client.player == null ||
+                client.world == null)
+            return;
+
+        List<PlayerListEntry> players =
+                new ArrayList<>(
+                        client.player.networkHandler
+                                .getPlayerList()
+                );
+
+        players.removeIf(entry ->
+                entry.getProfile() == null ||
+                        entry.getProfile().name() == null
+        );
+
+        if (players.isEmpty())
+            return;
+
+        PlayerListEntry entry =
+                players.get(
+                        RANDOM.nextInt(
+                                players.size()
+                        )
+                );
+
+        String playerName =
+                entry.getProfile().name();
+
+        String message =
+                PLAYER_CHAT_MESSAGES[
+                        RANDOM.nextInt(
+                                PLAYER_CHAT_MESSAGES.length
+                        )
+                ];
+
+        MutableText chat =
+                Text.literal(
+                        playerName +
+                                ": "
+                ).formatted(
+                        Formatting.GRAY
+                );
+
+        int roll =
+                RANDOM.nextInt(100);
+
+        if (roll < 5) {
+
+            chat.append(
+                    glitchText(message)
             );
 
-    players.removeIf(entry ->
-            entry.getProfile() == null ||
-                    entry.getProfile().name() == null
-    );
-
-    if (players.isEmpty())
-        return;
-
-    PlayerListEntry entry =
-            players.get(
-                    RANDOM.nextInt(
-                            players.size()
-                    )
+            client.player.playSound(
+                    ModSounds.GLITCH,
+                    0.08f +
+                            RANDOM.nextFloat() * 0.12f,
+                    0.75f +
+                            RANDOM.nextFloat() * 0.35f
             );
 
-    String playerName =
-            entry.getProfile().name();
+            fireDirectorGlitch();
 
-    String message =
-            PLAYER_CHAT_MESSAGES[
-                    RANDOM.nextInt(
-                            PLAYER_CHAT_MESSAGES.length
-                    )
-            ];
+        } else if (roll < 18) {
 
-    MutableText chat =
-            Text.literal(
-                    playerName +
-                            ": "
-            ).formatted(
-                    Formatting.GRAY
+            chat.append(
+                    Text.literal(message)
+                            .formatted(
+                                    Formatting.DARK_RED
+                            )
             );
 
-    int roll =
-            RANDOM.nextInt(100);
+        } else if (roll < 28) {
 
-    // Очень редкий настоящий glitch
-    if (roll < 5) {
+            chat.append(
+                    Text.literal(message)
+                            .formatted(
+                                    Formatting.RED
+                            )
+            );
 
-        chat.append(
-                glitchText(message)
+        } else if (roll < 38) {
+
+            chat.append(
+                    Text.literal(message)
+                            .formatted(
+                                    Formatting.DARK_GRAY
+                            )
+            );
+
+        } else {
+
+            chat.append(
+                    Text.literal(message)
+                            .formatted(
+                                    Formatting.WHITE
+                            )
+            );
+        }
+
+        client.player.sendMessage(
+                chat,
+                false
+        );
+
+        InsanityManager.add(
+                0.5f +
+                        RANDOM.nextFloat() * 1.5f
+        );
+    }
+
+    // FAKE PLAYER CHAT GLITCH
+    private static void firePlayerChatGlitch(
+            MinecraftClient client
+    ) {
+
+        if (WatcherEvent.isActive())
+            return;
+
+        if (client.player == null ||
+                client.world == null)
+            return;
+
+        List<PlayerListEntry> players =
+                new ArrayList<>(
+                        client.player.networkHandler
+                                .getPlayerList()
+                );
+
+        players.removeIf(entry ->
+                entry.getProfile() == null ||
+                        entry.getProfile().name() == null
+        );
+
+        if (players.isEmpty())
+            return;
+
+        PlayerListEntry entry =
+                players.get(
+                        RANDOM.nextInt(
+                                players.size()
+                        )
+                );
+
+        String playerName =
+                entry.getProfile().name();
+
+        String message =
+                PLAYER_CHAT_GLITCH_MESSAGES[
+                        RANDOM.nextInt(
+                                PLAYER_CHAT_GLITCH_MESSAGES.length
+                        )
+                ];
+
+        MutableText chat =
+                Text.literal(
+                        playerName +
+                                ": "
+                ).formatted(
+                        Formatting.GRAY
+                );
+
+        int colorRoll =
+                RANDOM.nextInt(100);
+
+        if (colorRoll < 25) {
+
+            chat.append(
+                    glitchText(message)
+                            .formatted(
+                                    Formatting.DARK_RED
+                            )
+            );
+
+        } else if (colorRoll < 45) {
+
+            chat.append(
+                    glitchText(message)
+                            .formatted(
+                                    Formatting.RED
+                            )
+            );
+
+        } else if (colorRoll < 65) {
+
+            chat.append(
+                    glitchText(message)
+                            .formatted(
+                                    Formatting.DARK_PURPLE
+                            )
+            );
+
+        } else if (colorRoll < 80) {
+
+            chat.append(
+                    glitchText(message)
+                            .formatted(
+                                    Formatting.DARK_GRAY
+                            )
+            );
+
+        } else {
+
+            chat.append(
+                    glitchText(message)
+                            .formatted(
+                                    Formatting.WHITE
+                            )
+            );
+        }
+
+        client.player.sendMessage(
+                chat,
+                false
         );
 
         client.player.playSound(
                 ModSounds.GLITCH,
-                0.08f +
-                        RANDOM.nextFloat() * 0.12f,
-                0.75f +
+                0.10f +
+                        RANDOM.nextFloat() * 0.15f,
+                0.70f +
                         RANDOM.nextFloat() * 0.35f
         );
 
         fireDirectorGlitch();
 
-    // Красное сообщение
-    } else if (roll < 18) {
-
-        chat.append(
-                Text.literal(message)
-                        .formatted(
-                                Formatting.DARK_RED
-                        )
-        );
-
-    // Ярко-красное
-    } else if (roll < 28) {
-
-        chat.append(
-                Text.literal(message)
-                        .formatted(
-                                Formatting.RED
-                        )
-        );
-
-    // Тёмно-серое
-    } else if (roll < 38) {
-
-        chat.append(
-                Text.literal(message)
-                        .formatted(
-                                Formatting.DARK_GRAY
-                        )
-        );
-
-    // Обычное
-    } else {
-
-        chat.append(
-                Text.literal(message)
-                        .formatted(
-                                Formatting.WHITE
-                        )
+        InsanityManager.add(
+                2.0f +
+                        RANDOM.nextFloat() * 3.0f
         );
     }
 
-    client.player.sendMessage(
-            chat,
-            false
-    );
-
-    InsanityManager.add(
-            0.5f +
-                    RANDOM.nextFloat() * 1.5f
-    );
-}
-
-    // FAKE PLAYER CHAT GLITCH
-private static void firePlayerChatGlitch(
-        MinecraftClient client
-) {
-
-    if (client.player == null ||
-            client.world == null)
-        return;
-
-    List<PlayerListEntry> players =
-            new ArrayList<>(
-                    client.player.networkHandler
-                            .getPlayerList()
-            );
-
-    players.removeIf(entry ->
-            entry.getProfile() == null ||
-                    entry.getProfile().name() == null
-    );
-
-    if (players.isEmpty())
-        return;
-
-    PlayerListEntry entry =
-            players.get(
-                    RANDOM.nextInt(
-                            players.size()
-                    )
-            );
-
-    String playerName =
-            entry.getProfile().name();
-
-    String message =
-            PLAYER_CHAT_GLITCH_MESSAGES[
-                    RANDOM.nextInt(
-                            PLAYER_CHAT_GLITCH_MESSAGES.length
-                    )
-            ];
-
-    MutableText chat =
-            Text.literal(
-                    playerName +
-                            ": "
-            ).formatted(
-                    Formatting.GRAY
-            );
-
-    int colorRoll =
-        RANDOM.nextInt(100);
-
-if (colorRoll < 25) {
-
-    chat.append(
-            glitchText(message)
-                    .formatted(
-                            Formatting.DARK_RED
-                    )
-    );
-
-} else if (colorRoll < 45) {
-
-    chat.append(
-            glitchText(message)
-                    .formatted(
-                            Formatting.RED
-                    )
-    );
-
-} else if (colorRoll < 65) {
-
-    chat.append(
-            glitchText(message)
-                    .formatted(
-                            Formatting.DARK_PURPLE
-                    )
-    );
-
-} else if (colorRoll < 80) {
-
-    chat.append(
-            glitchText(message)
-                    .formatted(
-                            Formatting.DARK_GRAY
-                    )
-    );
-
-} else {
-
-    chat.append(
-            glitchText(message)
-                    .formatted(
-                            Formatting.WHITE
-                    )
-    );
-}
-
-    client.player.sendMessage(
-            chat,
-            false
-    );
-
-    client.player.playSound(
-            ModSounds.GLITCH,
-            0.10f +
-                    RANDOM.nextFloat() * 0.15f,
-            0.70f +
-                    RANDOM.nextFloat() * 0.35f
-    );
-
-    fireDirectorGlitch();
-
-    InsanityManager.add(
-            2.0f +
-                    RANDOM.nextFloat() * 3.0f
-    );
-}
-
     // OTHER EVENTS
     public static void fireEyes() {
+
+        if (WatcherEvent.isActive())
+            return;
 
         eyesTicks =
                 12 +
@@ -2223,6 +2325,9 @@ if (colorRoll < 25) {
 
     public static void firePeripheral() {
 
+        if (WatcherEvent.isActive())
+            return;
+
         peripheralTicks =
                 5 +
                         RANDOM.nextInt(18);
@@ -2234,6 +2339,9 @@ if (colorRoll < 25) {
     }
 
     public static void fireWorldDistortion() {
+
+        if (WatcherEvent.isActive())
+            return;
 
         distortionTicks =
                 10 +
@@ -2267,6 +2375,9 @@ if (colorRoll < 25) {
     public static void fireFootsteps(
             MinecraftClient client
     ) {
+
+        if (WatcherEvent.isActive())
+            return;
 
         if (client.player == null ||
                 client.world == null)
@@ -2338,6 +2449,9 @@ if (colorRoll < 25) {
     public static void fireTorchIllusion(
             MinecraftClient client
     ) {
+
+        if (WatcherEvent.isActive())
+            return;
 
         if (client.player == null ||
                 client.world == null ||
@@ -2467,6 +2581,9 @@ if (colorRoll < 25) {
             MinecraftClient client
     ) {
 
+        if (WatcherEvent.isActive())
+            return;
+
         if (client.player == null ||
                 client.world == null ||
                 doppelganger != null ||
@@ -2556,6 +2673,16 @@ if (colorRoll < 25) {
             DrawContext context,
             RenderTickCounter tickCounter
     ) {
+
+        /*
+         * Во время Watcher старые визуальные эффекты
+         * HorrorManager не рисуются.
+         *
+         * Сам визуальный эффект Watcher добавим
+         * отдельно в WatcherEvent.
+         */
+        if (WatcherEvent.isActive())
+            return;
 
         if (glitchTicks <= 0 &&
                 vhsTicks <= 0 &&
