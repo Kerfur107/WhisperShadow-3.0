@@ -60,5 +60,23 @@
         "stream": true
       }
     ]
+  },
+
+  "watcher_static": {
+    "sounds": [
+      {
+        "name": "whispershadow:watcher_static",
+        "stream": false
+      }
+    ]
+  },
+
+  "watcher_sting": {
+    "sounds": [
+      {
+        "name": "whispershadow:watcher_sting",
+        "stream": false
+      }
+    ]
   }
 }
