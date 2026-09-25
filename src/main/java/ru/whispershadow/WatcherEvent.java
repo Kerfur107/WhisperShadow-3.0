@@ -559,12 +559,6 @@ public final class WatcherEvent {
             if (profile == null)
                 continue;
 
-            if (profile.id().equals(
-                    client.player.getUuid()
-            )) {
-                continue;
-            }
-
             profiles.add(profile);
         }
 
