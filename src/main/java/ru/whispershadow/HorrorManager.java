@@ -454,8 +454,7 @@ private static int playerChatGlitchCooldown = 0;
     private static boolean runActive = false;
     private static int runTicks = 0;
     private static final int RUN_DURATION_TICKS = 20 * 20;
-    private static final int CHASE_SOUND_TICKS = 20 * 20;
-
+    
     // Player skin
     private static com.mojang.authlib.GameProfile getRandomPlayerProfile(
             MinecraftClient client
@@ -722,6 +721,8 @@ private static int playerChatGlitchCooldown = 0;
             showYourselfDelay = 0;
             showYourselfPending = false;
 
+            playerChatCooldown = 0;
+            playerChatGlitchCooldown = 0;
             return;
         }
 
@@ -1738,12 +1739,66 @@ private static void firePlayerChat(
                     Formatting.GRAY
             );
 
-    chat.append(
-            Text.literal(message)
-                    .formatted(
-                            Formatting.WHITE
-                    )
-    );
+    int roll =
+            RANDOM.nextInt(100);
+
+    // Очень редкий настоящий glitch
+    if (roll < 5) {
+
+        chat.append(
+                glitchText(message)
+        );
+
+        client.player.playSound(
+                ModSounds.GLITCH,
+                0.08f +
+                        RANDOM.nextFloat() * 0.12f,
+                0.75f +
+                        RANDOM.nextFloat() * 0.35f
+        );
+
+        fireDirectorGlitch();
+
+    // Красное сообщение
+    } else if (roll < 18) {
+
+        chat.append(
+                Text.literal(message)
+                        .formatted(
+                                Formatting.DARK_RED
+                        )
+        );
+
+    // Ярко-красное
+    } else if (roll < 28) {
+
+        chat.append(
+                Text.literal(message)
+                        .formatted(
+                                Formatting.RED
+                        )
+        );
+
+    // Тёмно-серое
+    } else if (roll < 38) {
+
+        chat.append(
+                Text.literal(message)
+                        .formatted(
+                                Formatting.DARK_GRAY
+                        )
+        );
+
+    // Обычное
+    } else {
+
+        chat.append(
+                Text.literal(message)
+                        .formatted(
+                                Formatting.WHITE
+                        )
+        );
+    }
 
     client.player.sendMessage(
             chat,
@@ -1804,9 +1859,54 @@ private static void firePlayerChatGlitch(
                     Formatting.GRAY
             );
 
+    int colorRoll =
+        RANDOM.nextInt(100);
+
+if (colorRoll < 25) {
+
     chat.append(
             glitchText(message)
+                    .formatted(
+                            Formatting.DARK_RED
+                    )
     );
+
+} else if (colorRoll < 45) {
+
+    chat.append(
+            glitchText(message)
+                    .formatted(
+                            Formatting.RED
+                    )
+    );
+
+} else if (colorRoll < 65) {
+
+    chat.append(
+            glitchText(message)
+                    .formatted(
+                            Formatting.DARK_PURPLE
+                    )
+    );
+
+} else if (colorRoll < 80) {
+
+    chat.append(
+            glitchText(message)
+                    .formatted(
+                            Formatting.DARK_GRAY
+                    )
+    );
+
+} else {
+
+    chat.append(
+            glitchText(message)
+                    .formatted(
+                            Formatting.WHITE
+                    )
+    );
+}
 
     client.player.sendMessage(
             chat,
