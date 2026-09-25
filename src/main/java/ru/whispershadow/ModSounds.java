@@ -25,6 +25,28 @@ public final class ModSounds {
     public static final Identifier CIRCUIT_CHASE_ID =
             Identifier.of(WhisperShadowClient.MOD_ID, "circuit_chase");
 
+    // ========================================
+    // WATCHER SOUNDS
+    // ========================================
+
+    public static final Identifier WATCHER_STATIC_ID =
+            Identifier.of(
+                    WhisperShadowClient.MOD_ID,
+                    "watcher_static"
+            );
+
+    public static final Identifier WATCHER_WHISPER_ID =
+            Identifier.of(
+                    WhisperShadowClient.MOD_ID,
+                    "watcher_whisper"
+            );
+
+    public static final Identifier WATCHER_STING_ID =
+            Identifier.of(
+                    WhisperShadowClient.MOD_ID,
+                    "watcher_sting"
+            );
+
     public static final SoundEvent WHISPER =
             SoundEvent.of(WHISPER_ID);
 
@@ -43,9 +65,19 @@ public final class ModSounds {
     public static final SoundEvent CIRCUIT_CHASE =
             SoundEvent.of(CIRCUIT_CHASE_ID);
 
+    public static final SoundEvent WATCHER_STATIC =
+            SoundEvent.of(WATCHER_STATIC_ID);
+
+    public static final SoundEvent WATCHER_WHISPER =
+            SoundEvent.of(WATCHER_WHISPER_ID);
+
+    public static final SoundEvent WATCHER_STING =
+            SoundEvent.of(WATCHER_STING_ID);
+
     private ModSounds() {}
 
     public static void init() {
+
         Registry.register(
                 Registries.SOUND_EVENT,
                 WHISPER_ID,
@@ -80,6 +112,24 @@ public final class ModSounds {
                 Registries.SOUND_EVENT,
                 CIRCUIT_CHASE_ID,
                 CIRCUIT_CHASE
+        );
+
+        Registry.register(
+                Registries.SOUND_EVENT,
+                WATCHER_STATIC_ID,
+                WATCHER_STATIC
+        );
+
+        Registry.register(
+                Registries.SOUND_EVENT,
+                WATCHER_WHISPER_ID,
+                WATCHER_WHISPER
+        );
+
+        Registry.register(
+                Registries.SOUND_EVENT,
+                WATCHER_STING_ID,
+                WATCHER_STING
         );
     }
 }
