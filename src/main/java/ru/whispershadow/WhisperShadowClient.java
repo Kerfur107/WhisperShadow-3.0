@@ -39,6 +39,7 @@ public final class WhisperShadowClient implements ClientModInitializer {
 
                     dispatcher.register(
                             ClientCommandManager.literal("ws")
+
                                     .then(
                                             ClientCommandManager.literal("figure")
                                                     .executes(context -> {
@@ -50,6 +51,7 @@ public final class WhisperShadowClient implements ClientModInitializer {
                                                         return 1;
                                                     })
                                     )
+
                                     .then(
                                             ClientCommandManager.literal("run")
                                                     .executes(context -> {
@@ -61,11 +63,24 @@ public final class WhisperShadowClient implements ClientModInitializer {
                                                         return 1;
                                                     })
                                     )
+
                                     .then(
                                             ClientCommandManager.literal("doppel")
                                                     .executes(context -> {
 
                                                         HorrorManager.fireDoppelganger(
+                                                                context.getSource().getClient()
+                                                        );
+
+                                                        return 1;
+                                                    })
+                                    )
+
+                                    .then(
+                                            ClientCommandManager.literal("broken")
+                                                    .executes(context -> {
+
+                                                        HorrorManager.fireBrokenScript(
                                                                 context.getSource().getClient()
                                                         );
 
