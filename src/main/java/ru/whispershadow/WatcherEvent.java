@@ -272,11 +272,8 @@ public final class WatcherEvent {
             return;
 
         int count =
-                Math.min(
-                        1 + RANDOM.nextInt(5),
-                        Math.max(1, profiles.size())
-                );
-
+        3 + RANDOM.nextInt(6);
+        
         List<GameProfile> shuffled =
                 new ArrayList<>(profiles);
 
@@ -775,7 +772,7 @@ public final class WatcherEvent {
 
         client.player.playSound(
                 ModSounds.WATCHER_STATIC,
-                0.18f,
+                0.45f,
                 1.0f
         );
     }
