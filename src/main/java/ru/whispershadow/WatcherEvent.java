@@ -7,6 +7,8 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.entity.player.SkinTextures;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
@@ -217,7 +219,9 @@ public final class WatcherEvent {
         }
     }
 
-    private static void spawnFirstWatcher(MinecraftClient client) {
+    private static void spawnFirstWatcher(
+            MinecraftClient client
+    ) {
 
         if (client.player == null || client.world == null)
             return;
@@ -328,16 +332,42 @@ public final class WatcherEvent {
         if (client.world == null)
             return null;
 
+        /*
+         * Создаём отдельный профиль с новым UUID.
+         *
+         * Старый вариант с:
+         *
+         * fakeProfile.properties().putAll(...)
+         *
+         * больше НЕ используется.
+         *
+         * Properties у GameProfile здесь immutable,
+         * из-за этого раньше происходил UnsupportedOperationException.
+         */
         GameProfile fakeProfile =
                 new GameProfile(
                         UUID.randomUUID(),
                         originalProfile.name()
                 );
 
+        /*
+         * Получаем настоящие текстуры выбранного игрока.
+         */
+        SkinTextures skinTextures =
+                getSkinTextures(
+                        client,
+                        originalProfile
+                );
+
+        /*
+         * Используем специальную сущность,
+         * которая возвращает именно эти текстуры.
+         */
         OtherClientPlayerEntity watcher =
-                new OtherClientPlayerEntity(
+                new SkinWatcher(
                         client.world,
-                        fakeProfile
+                        fakeProfile,
+                        skinTextures
                 );
 
         watcher.setPosition(position);
@@ -360,6 +390,89 @@ public final class WatcherEvent {
         );
 
         return watcher;
+    }
+
+    private static SkinTextures getSkinTextures(
+            MinecraftClient client,
+            GameProfile profile
+    ) {
+
+        /*
+         * Если это собственный игрок,
+         * используем его уже загруженный скин.
+         */
+        if (client.player != null
+                && client.player.getUuid().equals(profile.id())) {
+
+            return client.player.getSkin();
+        }
+
+        /*
+         * Ищем игрока в Tab и берём его реальные SkinTextures.
+         */
+        ClientPlayNetworkHandler networkHandler =
+                client.getNetworkHandler();
+
+        if (networkHandler != null) {
+
+            for (PlayerListEntry entry :
+                    networkHandler.getPlayerList()) {
+
+                if (entry == null)
+                    continue;
+
+                GameProfile entryProfile =
+                        entry.getProfile();
+
+                if (entryProfile == null)
+                    continue;
+
+                if (entryProfile.id().equals(profile.id())) {
+
+                    return entry.getSkinTextures();
+                }
+            }
+        }
+
+        /*
+         * Если настоящий скин не найден,
+         * используем стандартный Minecraft skin.
+         */
+        return DefaultSkinHelper.getSkinTextures(
+                profile
+        );
+    }
+
+    /*
+     * Фигура-игрок с принудительно заданным скином.
+     *
+     * Minecraft будет видеть отдельную сущность
+     * с отдельным UUID, но getSkin() будет возвращать
+     * SkinTextures настоящего выбранного игрока.
+     */
+    private static final class SkinWatcher
+            extends OtherClientPlayerEntity {
+
+        private final SkinTextures watcherSkin;
+
+        private SkinWatcher(
+                net.minecraft.client.world.ClientWorld world,
+                GameProfile profile,
+                SkinTextures skin
+        ) {
+
+            super(
+                    world,
+                    profile
+            );
+
+            this.watcherSkin = skin;
+        }
+
+        @Override
+        public SkinTextures getSkin() {
+            return watcherSkin;
+        }
     }
 
     private static void updateWatchers(
@@ -536,24 +649,51 @@ public final class WatcherEvent {
         ClientPlayNetworkHandler networkHandler =
                 client.getNetworkHandler();
 
-        if (networkHandler == null)
-            return profiles;
+        if (networkHandler != null) {
 
-        Collection<PlayerListEntry> entries =
-                networkHandler.getPlayerList();
+            Collection<PlayerListEntry> entries =
+                    networkHandler.getPlayerList();
 
-        for (PlayerListEntry entry : entries) {
+            for (PlayerListEntry entry : entries) {
 
-            if (entry == null)
-                continue;
+                if (entry == null)
+                    continue;
 
-            GameProfile profile =
-                    entry.getProfile();
+                GameProfile profile =
+                        entry.getProfile();
 
-            if (profile == null)
-                continue;
+                if (profile == null)
+                    continue;
 
-            profiles.add(profile);
+                profiles.add(profile);
+            }
+        }
+
+        /*
+         * Если собственного игрока почему-то нет
+         * в Tab, всё равно добавляем его.
+         *
+         * Благодаря этому /ws watcher работает
+         * даже когда игрок находится один.
+         */
+        GameProfile ownProfile =
+                client.player.getGameProfile();
+
+        if (ownProfile != null) {
+
+            boolean alreadyExists = false;
+
+            for (GameProfile profile : profiles) {
+
+                if (profile.id().equals(ownProfile.id())) {
+                    alreadyExists = true;
+                    break;
+                }
+            }
+
+            if (!alreadyExists) {
+                profiles.add(ownProfile);
+            }
         }
 
         return profiles;
